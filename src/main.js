@@ -1,10 +1,10 @@
 import FilmsPresenter from './presenter/films-presenter.js';
 import {render} from './render.js';
-import FilmPopupView from './view/film-popup.js';
-import SortView from './view/filters.js';
-import NavView from './view/nav.js';
-import RankUserView from './view/rank-user.js';
-import StatisticView from './view/statistic.js';
+import FilmPopupView from './view/film-popup-view.js';
+import FiltersView from './view/filters-view.js';
+import NavView from './view/nav-view.js';
+import RankUserView from './view/rank-user-view.js';
+import StatisticView from './view/statistic-view.js';
 
 const siteBodyElement = document.querySelector('body');
 const siteMainElement = document.querySelector('.main');
@@ -15,7 +15,7 @@ const filmsPresenter = new FilmsPresenter({filmsContainer: siteMainElement});
 
 render(new RankUserView(), siteHeaderElement);
 render(new NavView(), siteMainElement);
-render(new SortView(), siteMainElement);
+render(new FiltersView(), siteMainElement);
 render(new StatisticView(), siteFooterElement);
 
 filmsPresenter.init();
