@@ -18,17 +18,11 @@ function createCardTemplate(film) {
     favorite
   } = film.userDetails;
 
-  const activeWatchlistClassName = watchlist
-    ? 'film-card__controls-item--add-to-watchlist film-card__controls-item--active'
-    : 'film-card__controls-item--add-to-watchlist';
+  const activeWatchlistClassName = watchlist ? 'film-card__controls-item--active' : '';
 
-  const activeAsWatchedClassName = alreadyWatched
-    ? 'film-card__controls-item--mark-as-watched film-card__controls-item--active'
-    : 'film-card__controls-item--mark-as-watched';
+  const activeAsWatchedClassName = alreadyWatched ? 'film-card__controls-item--active' : '';
 
-  const activeFavoriteClassName = favorite
-    ? 'film-card__controls-item--favorite film-card__controls-item--active'
-    : 'film-card__controls-item--favorite';
+  const activeFavoriteClassName = favorite ? ' film-card__controls-item--active' : '';
 
   return (
     `<article class="film-card">
@@ -45,9 +39,20 @@ function createCardTemplate(film) {
         <span class="film-card__comments">${commentsCount} comments</span>
       </a>
       <div class="film-card__controls">
-        <button class="film-card__controls-item ${activeWatchlistClassName}" type="button">Add to watchlist</button>
-        <button class="film-card__controls-item ${activeAsWatchedClassName}" type="button">Mark as watched</button>
-        <button class="film-card__controls-item ${activeFavoriteClassName}" type="button">Mark as favorite</button>
+        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${activeWatchlistClassName}"
+        type="button">
+        Add to watchlist
+        </button>
+
+        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${activeAsWatchedClassName}"
+        type="button">
+        Mark as watched
+        </button>
+
+        <button class="film-card__controls-item film-card__controls-item--favorite ${activeFavoriteClassName}"
+        type="button">
+        Mark as favorite
+        </button>
       </div>
     </article>
     `

@@ -1,14 +1,13 @@
 import {createElement} from '../render.js';
 
-function createFilmPopupTemplate(film) {
+const createFilmPopupTemplate = (film) => {
   const {
     title,
     originalTitle,
     rating,
     ageRating,
-    // year,
     duration,
-    genre,
+    genres,
     img,
     director,
     writers,
@@ -24,6 +23,9 @@ function createFilmPopupTemplate(film) {
   } = film.userDetails;
 
   const { date, releaseCountry} = film.filmInfo.release;
+
+  const { author, comment, commentDate, emotion } = film.filmInfo.mockComments;
+
 
   const activeWatchlistClassName = watchlist
     ? 'film-details__control-button--watchlist film-details__control-button--active'
@@ -92,7 +94,7 @@ function createFilmPopupTemplate(film) {
                 <tr class="film-details__row">
                   <td class="film-details__term">Genres</td>
                   <td class="film-details__cell">
-                    <span class="film-details__genre">${genre}</span>
+                    <span class="film-details__genre">${genres}</span>
                     <span class="film-details__genre">Film-Noir</span>
                     <span class="film-details__genre">Mystery</span>
                 </td>
@@ -117,7 +119,21 @@ function createFilmPopupTemplate(film) {
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
-
+            <ul class="film-details__comments-list">
+              <li class="film-details__comment">
+                <span class="film-details__comment-emoji">
+                  <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+                </span>
+                <div>
+                  <p class="film-details__comment-text">${comment}</p>
+                  <p class="film-details__comment-info">
+                    <span class="film-details__comment-author">${author}</span>
+                    <span class="film-details__comment-day">${commentDate}</span>
+                    <button class="film-details__comment-delete">Delete</button>
+                  </p>
+                </div>
+              </li>
+            </ul>
             <form class="film-details__new-comment" action="" method="get">
               <div class="film-details__add-emoji-label"></div>
 
@@ -158,7 +174,7 @@ function createFilmPopupTemplate(film) {
     </section>
     `
   );
-}
+};
 
 export default class FilmPopupView {
   constructor({film}) {

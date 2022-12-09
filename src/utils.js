@@ -1,8 +1,6 @@
-import dayjs from 'dayjs';
+// import dayjs from 'dayjs';
 
-const DATE_FORMAT = 'MMMM D, YYYY h:mm A';
-
-const humanizeCommentDate = (date) => date ? dayjs(date).format(DATE_FORMAT) : '';
+// const humanizeCommentDate = (date) => date ? dayjs(date).format(DATE_FORMAT) : '';
 
 const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 
@@ -26,9 +24,37 @@ const getRandomPositiveInteger = (a, b) => {
   return Math.floor(result);
 };
 
+const makeCounterIndex = () => {
+  let count = 0;
+
+  return () => {
+    count++;
+
+    return count;
+  };
+};
+
+const getArray = (array) => {
+  const maxLength = array.length;
+  const lengthOfArray = getRandomPositiveInteger(1, maxLength);
+  const arrayRandom = [];
+
+  while (arrayRandom.length < lengthOfArray) {
+    const indexOfEl = getRandomPositiveInteger(0, maxLength - 1);
+    const el = array[indexOfEl];
+
+    if (!arrayRandom.includes(el)) {
+      arrayRandom.push(el);
+    }
+  }
+  return arrayRandom;
+};
+
 export {
   getRandomArrayElement,
   getRandomPositiveFloat,
   getRandomPositiveInteger,
-  humanizeCommentDate
+  // humanizeCommentDate,
+  makeCounterIndex,
+  getArray
 };
