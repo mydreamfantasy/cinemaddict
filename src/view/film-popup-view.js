@@ -1,6 +1,6 @@
 import {createElement} from '../render.js';
 
-const createCommentTemplate = (comment) => `
+const createCommentTemplate = (comments) => comments.map((comment) => `
   <li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
@@ -14,7 +14,7 @@ const createCommentTemplate = (comment) => `
       </p>
     </div>
   </li>
-`;
+`).join('');
 
 const createFilmPopupTemplate = (film, filmComments) => {
   const {
@@ -46,6 +46,8 @@ const createFilmPopupTemplate = (film, filmComments) => {
   const activeAsWatchedClassName = alreadyWatched ? 'film-details__control-button--active' : '';
 
   const activeFavoriteClassName = favorite ? 'film-details__control-button--active' : '';
+
+  const commentTemplate = createCommentTemplate(filmComments);
 
   return (
     `
@@ -142,7 +144,7 @@ const createFilmPopupTemplate = (film, filmComments) => {
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filmComments.length}</span></h3>
             <ul class="film-details__comments-list">
-              ${filmComments.map(createCommentTemplate).join('')}
+              ${commentTemplate}
             </ul>
             <form class="film-details__new-comment" action="" method="get">
               <div class="film-details__add-emoji-label"></div>

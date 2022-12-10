@@ -79,7 +79,7 @@ const getRandomFilm = () => ({
     watchingDate: `${dayjs().format(DATE_FORMAT)}`,
     favorite: `${getRandomArrayElement(BOOLEAN)}`
   },
-  сomments: getArray(mockComments).map(({id}) => id),
+  comments: getArray(mockComments).map(({id}) => id),
 });
 
 export { getRandomFilm, mockComments };
