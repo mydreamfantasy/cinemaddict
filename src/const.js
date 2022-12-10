@@ -86,7 +86,7 @@ const FILMS_IMG = [
   'the-man-with-the-golden-arm.jpg'
 ];
 
-const GENRES = [
+const GENRE = [
   'comedy',
   'drama',
   'action',
@@ -95,6 +95,17 @@ const GENRES = [
   'romance',
   'fantasy',
   'animation'
+];
+
+const GENRES = [
+  'Comedy',
+  'Drama',
+  'Action',
+  'Crime',
+  'Adventure',
+  'Romance',
+  'Fantasy',
+  'Animation'
 ];
 
 const EMOJI = [
@@ -143,6 +154,7 @@ const MIN_DURATION = 30;
 const MAX_DURATION = 230;
 const DATE_FORMAT = 'DD/MM/YYYY hh:mm';
 const DATE_FORMAT_FILM = 'DD MMMM YYYY';
+const COMMENT_COUNT = 7;
 
 export {
   FILM_TITLE,
@@ -154,6 +166,7 @@ export {
   COUNTRY,
   BOOLEAN,
   FILMS_IMG,
+  GENRE,
   GENRES,
   EMOJI,
   AUTHOR,
@@ -168,5 +181,6 @@ export {
   MIN_DURATION,
   MAX_DURATION,
   DATE_FORMAT,
-  DATE_FORMAT_FILM
+  DATE_FORMAT_FILM,
+  COMMENT_COUNT
 };

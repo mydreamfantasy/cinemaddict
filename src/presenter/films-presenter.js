@@ -12,30 +12,25 @@ export default class FilmsPresenter {
   filmList = new FilmListView();
   filmListContainer = new FilmListContainerView();
 
-  constructor({filmsContainer, filmsModel, popupContainer, commentsModel}) {
+  constructor({filmsContainer, filmsModel, commentsModel}) {
     this.filmsContainer = filmsContainer;
     this.filmsModel = filmsModel;
-    this.popupContainer = popupContainer;
     this.commentsModel = commentsModel;
   }
 
   init() {
     this.catalogFilms = [...this.filmsModel.getFilms()];
-    // this.commentsList = [...this.commentsModel.getComments()]
+    this.commentsList = [...this.commentsModel.getComments()];
     render(this.filmSection, this.filmsContainer);
     render(this.filmList, this.filmSection.getElement());
     render(new HiddenTitleView(), this.filmList.getElement());
     render(this.filmListContainer, this.filmList.getElement());
 
-    // не получается так
-    // this.catalogFilms.forEach((i) => {
-    //   render(new CardView({film: this.catalogFilms[i]}), this.filmListContainer.getElement())
-    // })
-    for (let i = 0; i < this.catalogFilms.length; i++) {
-      render(new CardView({film: this.catalogFilms[i]}), this.filmListContainer.getElement());
-    }
+    this.catalogFilms.forEach((film) => {
+      render(new CardView({film}), this.filmListContainer.getElement());
+    });
 
     render(new ShowMoreButtonView(), this.filmList.getElement());
-    render(new FilmPopupView({film: this.catalogFilms[0]}), this.popupContainer.getElement()); // пишет ошибку
+    render(new FilmPopupView({film: this.catalogFilms[0], comments: this.commentsList}), document.body);
   }
 }

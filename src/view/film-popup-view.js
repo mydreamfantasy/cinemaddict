@@ -1,6 +1,22 @@
 import {createElement} from '../render.js';
 
-const createFilmPopupTemplate = (film) => {
+const createCommentTemplate = (comment) => `
+  <li class="film-details__comment">
+    <span class="film-details__comment-emoji">
+      <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
+    </span>
+    <div>
+      <p class="film-details__comment-text">${comment.comment}</p>
+      <p class="film-details__comment-info">
+        <span class="film-details__comment-author">${comment.author}</span>
+        <span class="film-details__comment-day">${comment.commentDate}</span>
+        <button class="film-details__comment-delete">Delete</button>
+      </p>
+    </div>
+  </li>
+`;
+
+const createFilmPopupTemplate = (film, filmComments) => {
   const {
     title,
     originalTitle,
@@ -13,7 +29,7 @@ const createFilmPopupTemplate = (film) => {
     writers,
     actors,
     description,
-    commentsCount
+    release
   } = film.filmInfo;
 
   const {
@@ -22,22 +38,14 @@ const createFilmPopupTemplate = (film) => {
     favorite
   } = film.userDetails;
 
-  const { date, releaseCountry} = film.filmInfo.release;
-
-  const { author, comment, commentDate, emotion } = film.filmInfo.mockComments;
+  const { date, releaseCountry} = release;
 
 
-  const activeWatchlistClassName = watchlist
-    ? 'film-details__control-button--watchlist film-details__control-button--active'
-    : 'film-details__control-button--watchlist';
+  const activeWatchlistClassName = watchlist ? 'film-details__control-button--active' : '';
 
-  const activeAsWatchedClassName = alreadyWatched
-    ? 'film-details__control-button--watched film-details__control-button--active'
-    : 'film-details__control-button--watched';
+  const activeAsWatchedClassName = alreadyWatched ? 'film-details__control-button--active' : '';
 
-  const activeFavoriteClassName = favorite
-    ? 'film-details__control-button--favorite film-details__control-button--active'
-    : 'film-details__control-button--favorite';
+  const activeFavoriteClassName = favorite ? 'film-details__control-button--active' : '';
 
   return (
     `
@@ -95,8 +103,6 @@ const createFilmPopupTemplate = (film) => {
                   <td class="film-details__term">Genres</td>
                   <td class="film-details__cell">
                     <span class="film-details__genre">${genres}</span>
-                    <span class="film-details__genre">Film-Noir</span>
-                    <span class="film-details__genre">Mystery</span>
                 </td>
                 </tr>
               </table>
@@ -106,33 +112,37 @@ const createFilmPopupTemplate = (film) => {
           </div>
 
           <section class="film-details__controls">
-            <button type="button" class="film-details__control-button ${activeWatchlistClassName}"
-              id="watchlist" name="watchlist">Add to watchlist</button>
             <button type="button"
-                class="film-details__control-button ${activeAsWatchedClassName}"
-              id="watched" name="watched">Already watched</button>
-            <button type="button" class="film-details__control-button ${activeFavoriteClassName}" id="favorite"
-              name="favorite">Add to favorites</button>
+              class="film-details__control-button film-details__control-button--watchlist ${activeWatchlistClassName}"
+              id="watchlist"
+              name="watchlist"
+              >
+              Add to watchlist
+            </button>
+            <button
+              type="button"
+              class="film-details__control-button film-details__control-button--watched ${activeAsWatchedClassName}"
+              id="watched"
+              name="watched"
+              >
+              Already watched
+            </button>
+            <button
+              type="button"
+              class="film-details__control-button film-details__control-button--favorite ${activeFavoriteClassName}"
+              id="favorite"
+              name="favorite"
+              >
+              Add to favorites
+            </button>
           </section>
         </div>
 
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
+            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filmComments.length}</span></h3>
             <ul class="film-details__comments-list">
-              <li class="film-details__comment">
-                <span class="film-details__comment-emoji">
-                  <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
-                </span>
-                <div>
-                  <p class="film-details__comment-text">${comment}</p>
-                  <p class="film-details__comment-info">
-                    <span class="film-details__comment-author">${author}</span>
-                    <span class="film-details__comment-day">${commentDate}</span>
-                    <button class="film-details__comment-delete">Delete</button>
-                  </p>
-                </div>
-              </li>
+              ${filmComments.map(createCommentTemplate).join('')}
             </ul>
             <form class="film-details__new-comment" action="" method="get">
               <div class="film-details__add-emoji-label"></div>
@@ -177,12 +187,14 @@ const createFilmPopupTemplate = (film) => {
 };
 
 export default class FilmPopupView {
-  constructor({film}) {
+  constructor({film, comments}) {
     this.film = film;
+    this.comments = comments;
   }
 
   getTemplate() {
-    return createFilmPopupTemplate(this.film);
+    const filmComments = this.getFilmComments();
+    return createFilmPopupTemplate(this.film, filmComments);
   }
 
   getElement() {
@@ -193,7 +205,13 @@ export default class FilmPopupView {
     return this.element;
   }
 
+  getFilmComments() {
+    const commentsSet = new Set(this.film.comments);
+    return this.comments.filter((comment) => commentsSet.has(comment.id));
+  }
+
   removeElement() {
+
     this.element = null;
   }
 }
