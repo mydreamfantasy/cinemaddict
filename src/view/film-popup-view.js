@@ -189,31 +189,35 @@ const createFilmPopupTemplate = (film, filmComments) => {
 };
 
 export default class FilmPopupView {
+  #element = null;
+  #film = null;
+  #comments = null;
+
   constructor({film, comments}) {
-    this.film = film;
-    this.comments = comments;
+    this.#film = film;
+    this.#comments = comments;
   }
 
-  getTemplate() {
-    const filmComments = this.getFilmComments();
-    return createFilmPopupTemplate(this.film, filmComments);
+  get template() {
+    const filmComments = this.filmComments;
+    return createFilmPopupTemplate(this.#film, filmComments);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
-  getFilmComments() {
-    const commentsSet = new Set(this.film.comments);
-    return this.comments.filter((comment) => commentsSet.has(comment.id));
+  get filmComments() {
+    const commentsSet = new Set(this.#film.comments);
+    return this.#comments.filter((comment) => commentsSet.has(comment.id));
   }
 
   removeElement() {
 
-    this.element = null;
+    this.#element = null;
   }
 }
