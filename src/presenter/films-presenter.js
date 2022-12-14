@@ -58,8 +58,15 @@ export default class FilmsPresenter {
     const filmComponent = new CardView({film});
     const filmPopup = new FilmPopupView({film, comments: this.#commentsList});
 
-    const appendPopup = () => document.body.appendChild(filmPopup.element);
-    const removePopup = () => document.body.removeChild(filmPopup.element);
+    const appendPopup = () => {
+      document.body.appendChild(filmPopup.element);
+      document.body.classList.add('hide-overflow');
+    };
+
+    const removePopup = () => {
+      document.body.removeChild(filmPopup.element);
+      document.body.classList.remove('hide-overflow');
+    };
 
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
@@ -71,7 +78,7 @@ export default class FilmsPresenter {
 
     const closeButtonHandler = () => removePopup();
 
-    filmComponent.element.addEventListener('click', () => {
+    filmComponent.element.querySelector('.film-card__link').addEventListener('click', () => {
       appendPopup();
       filmPopup.element.querySelector('.film-details__close-btn').addEventListener('click', closeButtonHandler);
       document.addEventListener('keydown', escKeyDownHandler);
