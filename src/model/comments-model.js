@@ -1,7 +1,7 @@
 export default class CommentsModel {
   #comments = null;
 
-  constructor({comments}) {
+  constructor(comments) {
     this.#comments = comments;
   }
 
