@@ -1,6 +1,3 @@
-// import dayjs from 'dayjs';
-
-// const humanizeCommentDate = (date) => date ? dayjs(date).format(DATE_FORMAT) : '';
 
 const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 
@@ -56,11 +53,14 @@ function getTimeFromMins(mins) {
   return `${hours }h ${ minutes }m`;
 }
 
+const isEscapeEvent = 'evt.key === \'Escape\' || evt.key === \'Esc\'';
+
 export {
   getRandomArrayElement,
   getRandomPositiveFloat,
   getRandomPositiveInteger,
   makeCounterIndex,
   getArray,
-  getTimeFromMins
+  getTimeFromMins,
+  isEscapeEvent
 };

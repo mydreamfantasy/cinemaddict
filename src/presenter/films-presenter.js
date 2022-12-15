@@ -1,4 +1,5 @@
 import {render} from '../render.js';
+import { isEscapeEvent } from '../utils.js';
 import CardView from '../view/card-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
@@ -44,7 +45,7 @@ export default class FilmsPresenter {
     evt.preventDefault();
     this.#catalogFilms
       .slice(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP)
-      .forEach((film) => this.#renderFilms(film));
+      .forEach((film) => this.#renderFilm(film));
 
     this.#renderedFilmCount += FILM_COUNT_PER_STEP;
 
@@ -54,7 +55,7 @@ export default class FilmsPresenter {
     }
   };
 
-  #renderFilms(film) {
+  #renderFilm(film) {
     const filmComponent = new CardView({film});
     const filmPopup = new FilmPopupView({film, comments: this.#commentsList});
 
@@ -69,14 +70,17 @@ export default class FilmsPresenter {
     };
 
     const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
+      if (isEscapeEvent) {
         evt.preventDefault();
         removePopup();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
 
-    const closeButtonHandler = () => removePopup();
+    const closeButtonHandler = () => {
+      removePopup();
+      filmPopup.element.querySelector('.film-details__close-btn').removeEventListener('click', closeButtonHandler);
+    };
 
     filmComponent.element.querySelector('.film-card__link').addEventListener('click', () => {
       appendPopup();
@@ -91,17 +95,17 @@ export default class FilmsPresenter {
     if (this.#catalogFilms.length <= 0)
     {
       render(new NoFilmsView(), this.#filmList.element);
-    } else {
-      for (let i = 0; i < Math.min(this.#catalogFilms.length, FILM_COUNT_PER_STEP); i++) {
-        this.#renderFilms(this.#catalogFilms[i]);
-      }
-
-      if (this.#catalogFilms.length > FILM_COUNT_PER_STEP) {
-        this.#showMoreButtonComponent = new ShowMoreButtonView();
-        render(this.#showMoreButtonComponent, this.#filmList.element);
-
-        this.#showMoreButtonComponent.element.addEventListener('click', this.#showMoreButtonClickHandler);
-      }
     }
+    for (let i = 0; i < Math.min(this.#catalogFilms.length, FILM_COUNT_PER_STEP); i++) {
+      this.#renderFilm(this.#catalogFilms[i]);
+    }
+
+    if (this.#catalogFilms.length > FILM_COUNT_PER_STEP) {
+      this.#showMoreButtonComponent = new ShowMoreButtonView();
+      render(this.#showMoreButtonComponent, this.#filmList.element);
+
+      this.#showMoreButtonComponent.element.addEventListener('click', this.#showMoreButtonClickHandler);
+    }
+
   }
 }
