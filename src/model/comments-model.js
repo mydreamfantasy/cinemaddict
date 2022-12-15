@@ -1,11 +1,11 @@
-// const COMMENT_COUNT = 5;
-
 export default class CommentsModel {
+  #comments = null;
+
   constructor(comments) {
-    this.comments = comments;
+    this.#comments = comments;
   }
 
-  getComments() {
-    return this.comments;
+  get comments() {
+    return this.#comments;
   }
 }
