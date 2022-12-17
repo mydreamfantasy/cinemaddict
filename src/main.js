@@ -2,7 +2,7 @@ import { mockComments } from './mock/films.js';
 import CommentsModel from './model/comments-model.js';
 import FilmsModel from './model/films-model.js';
 import FilmsPresenter from './presenter/films-presenter.js';
-import {render} from './render.js';
+import {render} from './framework/render.js';
 import FiltersView from './view/filters-view.js';
 import NavView from './view/nav-view.js';
 import RankUserView from './view/rank-user-view.js';

@@ -1,4 +1,4 @@
-import {render} from '../render.js';
+import {render} from '../framework/render.js';
 import { isEscapeEvent } from '../utils.js';
 import CardView from '../view/card-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
@@ -41,8 +41,7 @@ export default class FilmsPresenter {
     this.#renderFilmList();
   }
 
-  #showMoreButtonClickHandler = (evt) => {
-    evt.preventDefault();
+  #handleShowMoreButtonClick = () => {
     this.#catalogFilms
       .slice(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP)
       .forEach((film) => this.#renderFilm(film));
@@ -101,10 +100,10 @@ export default class FilmsPresenter {
     }
 
     if (this.#catalogFilms.length > FILM_COUNT_PER_STEP) {
-      this.#showMoreButtonComponent = new ShowMoreButtonView();
+      this.#showMoreButtonComponent = new ShowMoreButtonView({
+        onClick: this.#handleShowMoreButtonClick
+      });
       render(this.#showMoreButtonComponent, this.#filmList.element);
-
-      this.#showMoreButtonComponent.element.addEventListener('click', this.#showMoreButtonClickHandler);
     }
 
   }
