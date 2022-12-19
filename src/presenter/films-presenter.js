@@ -55,8 +55,37 @@ export default class FilmsPresenter {
   };
 
   #renderFilm(film) {
-    const filmComponent = new CardView({film});
-    const filmPopup = new FilmPopupView({film, comments: this.#commentsList});
+    // const filmComponent = new CardView({film});
+    // const filmPopup = new FilmPopupView({film, comments: this.#commentsList});
+
+    const escKeyDownHandler = (evt) => {
+      if (isEscapeEvent) {
+        evt.preventDefault();
+        removePopup.call(this);
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    const closeButtonHandler = () => {
+      removePopup.call(this);
+      filmPopup.element.querySelector('.film-details__close-btn').removeEventListener('click', closeButtonHandler);
+    };
+
+    const filmPopup = new FilmPopupView({
+      film,
+      comments: this.#commentsList,
+      onCloseClick: () => {
+        closeButtonHandler;
+      }
+    });
+
+    const filmComponent = new CardView({
+      film,
+      onOpenClick: () => {
+        appendPopup.call(this);
+        filmPopup;
+      }
+    });
 
     const appendPopup = () => {
       document.body.appendChild(filmPopup.element);
@@ -67,25 +96,6 @@ export default class FilmsPresenter {
       document.body.removeChild(filmPopup.element);
       document.body.classList.remove('hide-overflow');
     };
-
-    const escKeyDownHandler = (evt) => {
-      if (isEscapeEvent) {
-        evt.preventDefault();
-        removePopup();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const closeButtonHandler = () => {
-      removePopup();
-      filmPopup.element.querySelector('.film-details__close-btn').removeEventListener('click', closeButtonHandler);
-    };
-
-    filmComponent.element.querySelector('.film-card__link').addEventListener('click', () => {
-      appendPopup();
-      filmPopup.element.querySelector('.film-details__close-btn').addEventListener('click', closeButtonHandler);
-      document.addEventListener('keydown', escKeyDownHandler);
-    });
 
     render(filmComponent, this.#filmListContainer.element);
   }

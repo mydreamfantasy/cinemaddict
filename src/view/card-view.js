@@ -61,10 +61,14 @@ function createCardTemplate(film) {
 
 export default class CardView extends AbstractView {
   #film = null;
+  #handleOpenClick = null;
 
-  constructor({film}) {
+  constructor({film, onOpenClick}) {
     super();
     this.#film = film;
+    this.#handleOpenClick = onOpenClick;
+
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#handleOpenClick);
   }
 
   get template() {
