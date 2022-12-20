@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createCardTemplate(film) {
   const {
@@ -59,27 +59,19 @@ function createCardTemplate(film) {
   );
 }
 
-export default class CardView {
-  #element = null;
+export default class CardView extends AbstractView {
   #film = null;
+  #handleOpenClick = null;
 
-  constructor({film}) {
+  constructor({film, onOpenClick}) {
+    super();
     this.#film = film;
+    this.#handleOpenClick = onOpenClick;
+
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#handleOpenClick);
   }
 
   get template() {
     return createCardTemplate(this.#film);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

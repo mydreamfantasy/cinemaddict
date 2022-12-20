@@ -1,8 +1,6 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createCommentListTemplate() {
-
-
   return (
     `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
@@ -21,22 +19,8 @@ function createCommentListTemplate() {
   );
 }
 
-export default class CommentListView {
-  #element = null;
-
+export default class CommentListView extends AbstractView {
   get template() {
     return createCommentListTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
