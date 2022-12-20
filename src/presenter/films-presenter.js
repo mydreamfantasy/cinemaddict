@@ -55,47 +55,43 @@ export default class FilmsPresenter {
   };
 
   #renderFilm(film) {
-    // const filmComponent = new CardView({film});
-    // const filmPopup = new FilmPopupView({film, comments: this.#commentsList});
 
     const escKeyDownHandler = (evt) => {
-      if (isEscapeEvent) {
+      if (isEscapeEvent(evt)) {
         evt.preventDefault();
-        removePopup.call(this);
-        document.removeEventListener('keydown', escKeyDownHandler);
+        onClose();
       }
     };
 
-    const closeButtonHandler = () => {
-      removePopup.call(this);
-      filmPopup.element.querySelector('.film-details__close-btn').removeEventListener('click', closeButtonHandler);
-    };
+    function onClose() {
+      removePopup();
+      document.removeEventListener('keydown', escKeyDownHandler);
+    }
+
+    const closeButtonHandler = () => onClose();
 
     const filmPopup = new FilmPopupView({
       film,
       comments: this.#commentsList,
-      onCloseClick: () => {
-        closeButtonHandler;
-      }
+      onCloseClick: closeButtonHandler,
     });
 
     const filmComponent = new CardView({
       film,
-      onOpenClick: () => {
-        appendPopup.call(this);
-        filmPopup;
-      }
+      onOpenClick: appendPopup
     });
 
-    const appendPopup = () => {
+    function appendPopup() {
       document.body.appendChild(filmPopup.element);
       document.body.classList.add('hide-overflow');
-    };
+      document.addEventListener('keydown', escKeyDownHandler);
+    }
 
-    const removePopup = () => {
+    function removePopup() {
       document.body.removeChild(filmPopup.element);
       document.body.classList.remove('hide-overflow');
-    };
+      document.removeEventListener('keydown', escKeyDownHandler);
+    }
 
     render(filmComponent, this.#filmListContainer.element);
   }

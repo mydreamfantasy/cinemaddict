@@ -53,7 +53,7 @@ function getTimeFromMins(mins) {
   return `${hours }h ${ minutes }m`;
 }
 
-const isEscapeEvent = 'evt.key === \'Escape\' || evt.key === \'Esc\'';
+const isEscapeEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
 export {
   getRandomArrayElement,

@@ -191,11 +191,17 @@ const createFilmPopupTemplate = (film, filmComments) => {
 export default class FilmPopupView extends AbstractView {
   #film = null;
   #comments = null;
+  #handleCloseClick = null;
 
-  constructor({film, comments}) {
+  constructor({film, comments, onCloseClick}) {
     super();
     this.#film = film;
     this.#comments = comments;
+
+    this.#handleCloseClick = onCloseClick;
+
+    this.element.querySelector('.film-details__close')
+      .addEventListener('click', this.#handleCloseClick);
   }
 
   get template() {
