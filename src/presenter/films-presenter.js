@@ -1,4 +1,4 @@
-import { FILM_COUNT_PER_STEP } from '../const.js';
+import { FILM_COUNT_PER_STEP, TOP_RATED_COUNT, TOP_COMMENT_COUNT } from '../const.js';
 import {render} from '../framework/render.js';
 import { isEscapeEvent } from '../utils/utils.js';
 import CardView from '../view/card-view.js';
@@ -22,13 +22,9 @@ export default class FilmsPresenter {
   #filmsContainer = null;
   #filmsModel = null;
   #commentsModel = null;
-  #topCommentedModel = null;
-  #topRatedModel = null;
   #showMoreButtonComponent = null;
   #catalogFilms = [];
   #commentsList = [];
-  #topRatedFilms = [];
-  #topCommentedFilms = [];
 
   #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmSection = new FilmSectionView();
@@ -39,19 +35,15 @@ export default class FilmsPresenter {
   #filmsExtraRatedContainer = new FilmsExtraRatedContainerView();
   #filmsExtraCommentedContainer = new FilmsExtraCommentedContainerView();
 
-  constructor({filmsContainer, filmsModel, commentsModel, topCommentedModel, topRatedModel}) {
+  constructor({filmsContainer, filmsModel, commentsModel}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
-    this.#topCommentedModel = topCommentedModel;
-    this.#topRatedModel = topRatedModel;
   }
 
   init() {
     this.#catalogFilms = [...this.#filmsModel.films];
     this.#commentsList = [...this.#commentsModel.comments];
-    this.#topRatedFilms = [...this.#topRatedModel.films];
-    this.#topCommentedFilms = [...this.#topCommentedModel.films];
     render(this.#filmSection, this.#filmsContainer);
     render(this.#filmList, this.#filmSection.element);
     render(new HiddenTitleView(), this.#filmList.element);
@@ -66,12 +58,14 @@ export default class FilmsPresenter {
     render(new FilmsCommentedTitleView(), this.#filmsExtraCommented.element);
     render(this.#filmsExtraCommentedContainer, this.#filmsExtraCommented.element);
 
-    this.#topRatedFilms.forEach((film) => {
-      render(new TopRatedView({film}), this.#filmsExtraRatedContainer.element);
-    });
-    this.#topCommentedFilms.forEach((film) => {
-      render(new TopCommentView({film}), this.#filmsExtraCommentedContainer.element);
-    });
+    for (let i = 0; i < Math.min(this.#catalogFilms.length, TOP_RATED_COUNT); i++) {
+      render(new TopRatedView({film: this.#catalogFilms[i]}), this.#filmsExtraRatedContainer.element);
+    }
+
+    for (let i = 0; i < Math.min(this.#catalogFilms.length, TOP_COMMENT_COUNT); i++) {
+      render(new TopCommentView({film: this.#catalogFilms[i]}), this.#filmsExtraCommentedContainer.element);
+    }
+
   }
 
   #handleShowMoreButtonClick = () => {
@@ -144,6 +138,5 @@ export default class FilmsPresenter {
       });
       render(this.#showMoreButtonComponent, this.#filmList.element);
     }
-
   }
 }
