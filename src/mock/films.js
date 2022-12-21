@@ -5,7 +5,7 @@ import {
   makeCounterIndex,
   getArray,
   getTimeFromMins
-} from '../utils.js';
+} from '../utils/utils.js';
 
 import {
   FILM_TITLE,
@@ -33,7 +33,9 @@ import {
   MAX_DURATION,
   DATE_FORMAT,
   DATE_FORMAT_FILM,
-  COMMENT_COUNT
+  COMMENT_COUNT,
+  MIN_COUNT,
+  MAX_COUNT
 } from '../const.js';
 
 import dayjs from 'dayjs';
@@ -82,4 +84,6 @@ const getRandomFilm = () => ({
   comments: getArray(mockComments).map(({id}) => id),
 });
 
-export { getRandomFilm, mockComments };
+const countOfFilms = getRandomPositiveInteger(MIN_COUNT, MAX_COUNT);
+
+export { getRandomFilm, mockComments, countOfFilms };

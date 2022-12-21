@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createCardTemplate(film) {
+function createTopCommentTemplate(film) {
+
   const {
     title,
     rating,
@@ -25,7 +26,8 @@ function createCardTemplate(film) {
   const activeFavoriteClassName = favorite ? ' film-card__controls-item--active' : '';
 
   return (
-    `<article class="film-card">
+    `
+    <article class="film-card">
       <a class="film-card__link">
         <h3 class="film-card__title">${title}</h3>
         <p class="film-card__rating">${rating}</p>
@@ -54,25 +56,20 @@ function createCardTemplate(film) {
         Mark as favorite
         </button>
       </div>
-    </article>
+  </article>
     `
   );
 }
 
-export default class CardView extends AbstractView {
+export default class TopCommentView extends AbstractView {
   #film = null;
-  #handleOpenClick = null;
 
-  constructor({film, onOpenClick}) {
+  constructor({film}) {
     super();
     this.#film = film;
-    this.#handleOpenClick = onOpenClick;
-
-    this.element.querySelector('.film-card__link')
-      .addEventListener('click', this.#handleOpenClick);
   }
 
   get template() {
-    return createCardTemplate(this.#film);
+    return createTopCommentTemplate(this.#film);
   }
 }

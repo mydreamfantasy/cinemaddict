@@ -1,7 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import { countOfFilms } from '../mock/films.js';
 
 function createStatisticTemplate() {
-  return '<p>130 291 movies inside</p>';
+  return `<p>${countOfFilms} movies inside</p>`;
 }
 
 export default class StatisticView extends AbstractView {

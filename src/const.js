@@ -144,6 +144,21 @@ const AGE = [
   18
 ];
 
+
+const NoFilms = {
+  ALL_FILMS: 'There are no movies in our database',
+  WATCHLIST: 'There are no movies to watch now',
+  HISTORY: 'There are no watched movies now',
+  FAVORITE:'There are no favorite movies now',
+};
+
+const FilterType = {
+  ALL: 'all',
+  WATCHLIST: 'watchlist',
+  HISTORY: 'history',
+  FAVORITE: 'favorite',
+};
+
 const MIN_RATING = 2.0;
 const MAX_RATING = 10.0;
 const MIN_YEAR = 1900;
@@ -155,6 +170,12 @@ const MAX_DURATION = 230;
 const DATE_FORMAT = 'DD/MM/YYYY hh:mm';
 const DATE_FORMAT_FILM = 'DD MMMM YYYY';
 const COMMENT_COUNT = 7;
+const FILM_COUNT = 30;
+const FILM_COUNT_PER_STEP = 5;
+const MIN_COUNT = 30;
+const MAX_COUNT = 100000;
+const TOP_RATED_COUNT = 2;
+const TOP_COMMENT_COUNT = 2;
 
 export {
   FILM_TITLE,
@@ -172,6 +193,7 @@ export {
   AUTHOR,
   COMMENT,
   AGE,
+  NoFilms,
   MIN_RATING,
   MAX_RATING,
   MIN_YEAR,
@@ -182,5 +204,12 @@ export {
   MAX_DURATION,
   DATE_FORMAT,
   DATE_FORMAT_FILM,
-  COMMENT_COUNT
+  COMMENT_COUNT,
+  FILM_COUNT,
+  FILM_COUNT_PER_STEP,
+  FilterType,
+  MIN_COUNT,
+  MAX_COUNT,
+  TOP_COMMENT_COUNT,
+  TOP_RATED_COUNT
 };
