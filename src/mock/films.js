@@ -17,7 +17,6 @@ import {
   AUTHOR,
   COMMENT,
   COUNTRY,
-  BOOLEAN,
   FILMS_IMG,
   GENRE,
   GENRES,
@@ -76,10 +75,10 @@ const getRandomFilm = () => ({
     },
   },
   userDetails: {
-    watchlist: `${getRandomArrayElement(BOOLEAN)}`,
-    alreadyWatched: `${getRandomArrayElement(BOOLEAN)}`,
+    watchlist: Math.random() > 0.5,
+    alreadyWatched: Math.random() > 0.5,
     watchingDate: `${dayjs().format(DATE_FORMAT)}`,
-    favorite: `${getRandomArrayElement(BOOLEAN)}`
+    favorite: Math.random() > 0.5
   },
   comments: getArray(mockComments).map(({id}) => id),
 });

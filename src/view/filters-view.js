@@ -4,8 +4,14 @@ function createFilterItemTemplate(filter, isChecked) {
   const {name, count} = filter;
 
   return (
-    `<a href="#${name}" class="main-navigation__item ${isChecked ? 'main-navigation__item--active' : ''}">${name}
-      <span class="main-navigation__item-count ">${count}</span>
+    `<a href="#${name}" class="main-navigation__item
+     ${isChecked ? 'main-navigation__item--active' : ''}">
+      ${name.charAt(0).toUpperCase()}${name.slice(1)}
+
+      <span class="main-navigation__item-count ${name === 'all' ? 'visually-hidden' : ''}"
+      >
+      ${count}
+      </span>
      </a>`
   );
 }
@@ -18,7 +24,6 @@ function createFiltersTemplate(filterItems) {
 
   return (
     `<nav class="main-navigation">
-      <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
       ${filterItemsTemplate}
     </nav>
     `

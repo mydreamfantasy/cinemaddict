@@ -13,8 +13,8 @@ import { generateFilter } from './mock/filter.js';
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 const siteFooterElement = document.querySelector('.footer__statistics');
-const filters = generateFilter(FilmsModel.films);
 const filmsModel = new FilmsModel();
+const filters = generateFilter(filmsModel.films);
 const commentsModel = new CommentsModel(mockComments);
 const filmsPresenter = new FilmsPresenter({
   filmsContainer: siteMainElement,

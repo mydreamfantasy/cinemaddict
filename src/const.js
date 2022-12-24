@@ -71,11 +71,6 @@ const COUNTRY = [
   'USA'
 ];
 
-const BOOLEAN = [
-  true,
-  false
-];
-
 const FILMS_IMG = [
   'made-for-each-other.png',
   'popeye-meets-sinbad.png',
@@ -185,7 +180,6 @@ export {
   ACTORS,
   WRITERS,
   COUNTRY,
-  BOOLEAN,
   FILMS_IMG,
   GENRE,
   GENRES,
