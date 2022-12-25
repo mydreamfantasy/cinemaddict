@@ -6,7 +6,7 @@ function createFilterItemTemplate(filter, isChecked) {
   return (
     `<a href="#${name}" class="main-navigation__item
      ${isChecked ? 'main-navigation__item--active' : ''}">
-      ${name.charAt(0).toUpperCase()}${name.slice(1)}
+      ${name === 'all' ? 'All Movies' : name.charAt(0).toUpperCase()}${name === 'all' ? '' : name.slice(1)}
 
       <span class="main-navigation__item-count ${name === 'all' ? 'visually-hidden' : ''}"
       >

@@ -1,16 +1,39 @@
 
-import { filter } from '../utils/filter.js';
-
-
-// const checkWatchlist = ({ userDetails }) => userDetails.watchlist;
-// const checkHistory = ({ userDetails }) => userDetails.alreadyWatched;
-// const checkFavorite = ({ userDetails }) => userDetails.favorite;
+// import { filter } from '../utils/filter.js';
 
 function generateFilter(films) {
-  return Object.entries(filter).map(
+  let allFilms = 0;
+  let watchlistCount = 0;
+  let historyCount = 0;
+  let favoriteCount = 0;
+
+  films.forEach((film) => {
+    allFilms++;
+
+    if(film.userDetails.watchlist) {
+      watchlistCount++;
+    }
+
+    if(film.userDetails.alreadyWatched) {
+      historyCount++;
+    }
+
+    if(film.userDetails.favorite) {
+      favoriteCount++;
+    }
+  });
+
+  const counterFilms = () => ({
+    all: allFilms,
+    watchlist: watchlistCount,
+    history: historyCount,
+    favorite: favoriteCount
+  });
+
+  return Object.entries(counterFilms()).map(
     ([filterName, filterFilms]) => ({
       name: filterName,
-      count: filterFilms(films).length,
+      count: filterFilms,
     }),
   );
 }
