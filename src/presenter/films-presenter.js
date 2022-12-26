@@ -1,5 +1,6 @@
+import { FILM_COUNT_PER_STEP } from '../const.js';
 import {render} from '../framework/render.js';
-import { isEscapeEvent } from '../utils.js';
+import { isEscapeEvent } from '../utils/utils.js';
 import CardView from '../view/card-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
@@ -8,8 +9,6 @@ import FilmSectionView from '../view/film-section-view.js';
 import HiddenTitleView from '../view/hidden-title-view.js';
 import NoFilmsView from '../view/no-films-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
-
-const FILM_COUNT_PER_STEP = 5;
 
 export default class FilmsPresenter {
   #filmsContainer = null;
@@ -55,7 +54,6 @@ export default class FilmsPresenter {
   };
 
   #renderFilm(film) {
-
     const escKeyDownHandler = (evt) => {
       if (isEscapeEvent(evt)) {
         evt.preventDefault();
@@ -97,10 +95,11 @@ export default class FilmsPresenter {
   }
 
   #renderFilmList() {
-    if (this.#catalogFilms.length <= 0)
-    {
+    if (this.#catalogFilms.length <= 0) {
       render(new NoFilmsView(), this.#filmList.element);
+      return;
     }
+
     for (let i = 0; i < Math.min(this.#catalogFilms.length, FILM_COUNT_PER_STEP); i++) {
       this.#renderFilm(this.#catalogFilms[i]);
     }
@@ -111,6 +110,5 @@ export default class FilmsPresenter {
       });
       render(this.#showMoreButtonComponent, this.#filmList.element);
     }
-
   }
 }

@@ -5,7 +5,7 @@ import {
   makeCounterIndex,
   getArray,
   getTimeFromMins
-} from '../utils.js';
+} from '../utils/utils.js';
 
 import {
   FILM_TITLE,
@@ -17,7 +17,6 @@ import {
   AUTHOR,
   COMMENT,
   COUNTRY,
-  BOOLEAN,
   FILMS_IMG,
   GENRE,
   GENRES,
@@ -33,7 +32,9 @@ import {
   MAX_DURATION,
   DATE_FORMAT,
   DATE_FORMAT_FILM,
-  COMMENT_COUNT
+  COMMENT_COUNT,
+  MIN_COUNT,
+  MAX_COUNT
 } from '../const.js';
 
 import dayjs from 'dayjs';
@@ -74,12 +75,14 @@ const getRandomFilm = () => ({
     },
   },
   userDetails: {
-    watchlist: `${getRandomArrayElement(BOOLEAN)}`,
-    alreadyWatched: `${getRandomArrayElement(BOOLEAN)}`,
+    watchlist: Math.random() > 0.5,
+    alreadyWatched: Math.random() > 0.5,
     watchingDate: `${dayjs().format(DATE_FORMAT)}`,
-    favorite: `${getRandomArrayElement(BOOLEAN)}`
+    favorite: Math.random() > 0.5
   },
   comments: getArray(mockComments).map(({id}) => id),
 });
 
-export { getRandomFilm, mockComments };
+const countOfFilms = getRandomPositiveInteger(MIN_COUNT, MAX_COUNT);
+
+export { getRandomFilm, mockComments, countOfFilms };
