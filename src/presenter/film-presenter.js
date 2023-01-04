@@ -5,33 +5,38 @@ import FilmPopupView from '../view/film-popup-view.js';
 
 export default class FilmPresenter {
   #filmListContainer = null;
+  #commentsList = null;
 
   #filmComponent = null;
   #filmPopup = null;
 
 
   #film = null;
-  // #comments = null;
-
 
   constructor({filmListContainer}) {
     this.#filmListContainer = filmListContainer;
   }
 
-  init(film) {
+  init(film, comments) {
     this.#film = film;
+    this.#commentsList = comments;
 
     this.#filmComponent = new CardView({
       film: this.#film,
-      onOpenClick: this.#openPopupHandler,
-    });
-
-    this.#filmPopup = new FilmPopupView({
-      film: this.#film,
-      onCloseClick: this.#closeButtonHandler,
+      onOpenClick: this.#openFilmPopupHandler(this.#film, this.#commentsList)
     });
 
     render(this.#filmComponent, this.#filmListContainer);
+  }
+
+  #openFilmPopupHandler(film, comments) {
+    this.#filmPopup = new FilmPopupView({
+      film: film,
+      comments: comments,
+      onCloseClick: this.#closeButtonHandler,
+    });
+
+    this.#appendPopup();
   }
 
   #appendPopup() {
@@ -60,9 +65,5 @@ export default class FilmPresenter {
 
   #closeButtonHandler() {
     this.#onClose();
-  }
-
-  #openPopupHandler() {
-    this.#appendPopup();
   }
 }
