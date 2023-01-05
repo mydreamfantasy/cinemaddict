@@ -38,9 +38,10 @@ import {
 } from '../const.js';
 
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
 const counterComments = makeCounterIndex();
-const counterFilms = makeCounterIndex();
+// const counterFilms = makeCounterIndex();
 
 const createComment = () => ({
   id: `${counterComments()}`,
@@ -53,7 +54,7 @@ const createComment = () => ({
 const mockComments = Array.from({ length:COMMENT_COUNT }, createComment);
 
 const getRandomFilm = () => ({
-  id: `${counterFilms()}`,
+  id: nanoid(),
   filmInfo: {
     img: `./images/posters/${getRandomArrayElement(FILMS_IMG)}`,
     title: `${getRandomArrayElement(FILM_TITLE)}`,

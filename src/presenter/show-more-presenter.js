@@ -32,7 +32,7 @@ export default class ShowMorePresenter {
 
     this.#renderedFilmCount += FILM_COUNT_PER_STEP;
 
-    if (this.#renderedFilmCount >= this.#catalogFilms.length) {
+    if (this.#renderedFilmCount >= this.#catalogFilms) {
       this.#showMoreButtonComponent.element.remove();
       this.#showMoreButtonComponent.removeElement();
     }

@@ -161,6 +161,12 @@ const FilterDictionary = {
   favorite: 'Favorite',
 };
 
+const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
+
 const MIN_RATING = 2.0;
 const MAX_RATING = 10.0;
 const MIN_YEAR = 1900;
@@ -213,5 +219,6 @@ export {
   MIN_COUNT,
   MAX_COUNT,
   TOP_COMMENT_COUNT,
-  TOP_RATED_COUNT
+  TOP_RATED_COUNT,
+  SortType,
 };
