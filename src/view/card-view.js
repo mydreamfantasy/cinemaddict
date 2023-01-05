@@ -74,6 +74,7 @@ export default class CardView extends AbstractView {
     this.#handleHistoryClick = onHistoryClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
+
     this.element.querySelector('.film-card__link')
       .addEventListener('click', this.#handleOpenClick);
 

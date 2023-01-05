@@ -28,6 +28,7 @@ export default class FilmPresenter {
     this.#handleModeChange = onModeChange;
   }
 
+
   init(film, comments) {
     this.#film = film;
     this.#commentsList = comments;
@@ -73,16 +74,17 @@ export default class FilmPresenter {
   }
 
   #handleWatchlistClick = () => {
-    this.#handleDataChange({...this.#film, watchlist: !this.#film.userDetails.watchlist});
-  };
-
-  #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#film, favorite: !this.#film.userDetails.favorite});
+    this.#handleDataChange({...this.#film, userDetails: {...this.#film.userDetails, watchlist: false}});
   };
 
   #handleHistoryClick = () => {
-    this.#handleDataChange({...this.#film, alreadyWatched: !this.#film.userDetails.alreadyWatched});
+    this.#handleDataChange({...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: false}});
   };
+
+  #handleFavoriteClick = () => {
+    this.#handleDataChange({...this.#film, userDetails: {...this.#film.userDetails, favorite: false}});
+  };
+
 
   #openFilmPopupHandler(film, comments) {
     this.#filmPopup = new FilmPopupView({
