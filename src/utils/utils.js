@@ -60,33 +60,6 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
-// function getWeightForNullDate(dateA, dateB) {
-//   if (dateA === null && dateB === null) {
-//     return 0;
-//   }
-
-//   if (dateA === null) {
-//     return 1;
-//   }
-
-//   if (dateB === null) {
-//     return -1;
-//   }
-
-//   return null;
-// }
-
-// function sortFilmDate(film) {
-//   return film.sort((filmA, filmB) => filmA.filmInfo.year - filmB.filmInfo.year);
-
-// }
-
-// function sortFilmRating(filmA, filmB) {
-//   const weight = getWeightForNullDate(filmA.filmInfo.rating, filmB.filmInfo.rating);
-
-//   return weight ?? filmA.filmInfo.rating;
-// }
-
 export {
   getRandomArrayElement,
   getRandomPositiveFloat,
@@ -96,6 +69,4 @@ export {
   getTimeFromMins,
   isEscapeEvent,
   updateItem,
-  // sortFilmDate,
-  // sortFilmRating
 };

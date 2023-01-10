@@ -1,6 +1,6 @@
 
 import { FILM_COUNT_PER_STEP } from '../const.js';
-import { render } from '../framework/render.js';
+import { render, remove } from '../framework/render.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 
 export default class ShowMorePresenter {
@@ -11,10 +11,10 @@ export default class ShowMorePresenter {
   #catalogFilms = null;
   #showMoreButtonComponent = null;
 
-  constructor({renderFilms, filmList, catalogFilms}) {
+  constructor({renderFilms, filmList, maxFilmsAmount}) {
     this.#renderFilms = renderFilms;
     this.#filmList = filmList;
-    this.#catalogFilms = catalogFilms;
+    this.#catalogFilms = maxFilmsAmount;
   }
 
   init () {
@@ -25,6 +25,9 @@ export default class ShowMorePresenter {
     render(this.#showMoreButtonComponent, this.#filmList);
   }
 
+  destroy() {
+    remove(this.#showMoreButtonComponent);
+  }
 
   #handleShowMoreButtonClick = () => {
 
@@ -34,8 +37,6 @@ export default class ShowMorePresenter {
 
     if (this.#renderedFilmCount >= this.#catalogFilms) {
       this.#showMoreButtonComponent.element.remove();
-      this.#showMoreButtonComponent.removeElement();
     }
   };
-
 }

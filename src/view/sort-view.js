@@ -27,12 +27,12 @@ export default class SortView extends AbstractView {
   }
 
   #sortTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'A') {
+    if (!evt.target.dataset.sortType) {
       return;
     }
 
     evt.preventDefault();
-    this.element.classList.add('sort__button--active');
+    this.element.querySelector('.sort__button').classList.add('sort__button--active');
     this.#handleSortTypeChange(evt.target.dataset.sortType);
   };
 }

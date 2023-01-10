@@ -64,9 +64,11 @@ export default class FilmsPresenter {
       case SortType.RATING:
         this.#catalogFilms.sort((filmA, filmB) => filmB.filmInfo.rating - filmA.filmInfo.rating);
         break;
-      default:
-
+      case SortType.DEFAULT:
         this.#catalogFilms = [...this.#sourcedFilms];
+        break;
+      default:
+        throw new Error('Unknown state!');
     }
     this.#currentSortType = sortType;
   }
@@ -99,14 +101,15 @@ export default class FilmsPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.resetView());
   };
 
-  #renderFilm(film, comments) {
+  #renderFilm(film) {
     const filmPresenter = new FilmPresenter({
       filmListContainer: this.#filmListContainer.element,
       onDataChange: this.#handleFilmChange,
-      onModeChange: this.#handleModeChange
+      onModeChange: this.#handleModeChange,
+      comments: this.#commentsList
     });
 
-    filmPresenter.init(film, comments);
+    filmPresenter.init(film);
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
@@ -134,7 +137,7 @@ export default class FilmsPresenter {
   #renderFilms = (from, to) => {
     this.#catalogFilms
       .slice(from, to)
-      .forEach((film) => this.#renderFilm(film, this.#commentsList));
+      .forEach((film) => this.#renderFilm(film));
   };
 
   #renderNoFilms() {
@@ -145,7 +148,7 @@ export default class FilmsPresenter {
     const showMorePresenter = new ShowMorePresenter ({
       renderFilms: this.#renderFilms,
       filmList: this.#filmList.element,
-      catalogFilms: this.#catalogFilms.length
+      maxFilmsAmount: this.#catalogFilms.length
     });
 
     showMorePresenter.init();
