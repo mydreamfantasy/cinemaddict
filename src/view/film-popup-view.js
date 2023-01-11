@@ -192,16 +192,21 @@ export default class FilmPopupView extends AbstractView {
   #film = null;
   #comments = null;
   #handleCloseClick = null;
+  #handleControlsClick = null;
 
-  constructor({film, comments, onCloseClick}) {
+  constructor({film, comments, onCloseClick, onControlsClick}) {
     super();
     this.#film = film;
     this.#comments = comments;
 
     this.#handleCloseClick = onCloseClick;
+    this.#handleControlsClick = onControlsClick;
 
     this.element.querySelector('.film-details__close')
-      .addEventListener('click', this.#handleCloseClick);
+      .addEventListener('click', () => this.#handleCloseClick(this.#film));
+
+    this.element.querySelector('.film-details__controls')
+      .addEventListener('click', this.#controlsClickHandler);
   }
 
   get template() {
@@ -213,4 +218,30 @@ export default class FilmPopupView extends AbstractView {
     const commentsSet = new Set(this.#film.comments);
     return this.#comments.filter((comment) => commentsSet.has(comment.id));
   }
+
+  #controlsClickHandler = (evt) => {
+    evt.preventDefault();
+
+    if (!evt.target.id) {
+      return;
+    }
+
+    let updatedDetails = this.#film.userDetails;
+
+    switch (evt.target.id) {
+      case 'watchlist':
+        updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
+        break;
+      case 'watched':
+        updatedDetails = { ...updatedDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
+        break;
+      case 'favorite':
+        updatedDetails = { ...updatedDetails, favorite: !this.#film.userDetails.favorite };
+        break;
+      default:
+        throw new Error('Unknown state!');
+    }
+
+    this.#handleControlsClick(updatedDetails);
+  };
 }

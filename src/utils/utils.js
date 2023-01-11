@@ -55,6 +55,15 @@ function getTimeFromMins(mins) {
 
 const isEscapeEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
+
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+function sortByYear() {
+  return (filmA, filmB) => filmB.filmInfo.year - filmA.filmInfo.year;
+}
+
 export {
   getRandomArrayElement,
   getRandomPositiveFloat,
@@ -62,5 +71,7 @@ export {
   makeCounterIndex,
   getArray,
   getTimeFromMins,
-  isEscapeEvent
+  isEscapeEvent,
+  updateItem,
+  sortByYear
 };

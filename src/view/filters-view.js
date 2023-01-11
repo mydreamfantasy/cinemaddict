@@ -1,25 +1,23 @@
+import { FilterDictionary } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createFilterItemTemplate(filter, isChecked) {
-  const {name, count} = filter;
+function createFilterItemTemplate(filter, count, isChecked) {
 
   return (
-    `<a href="#${name}" class="main-navigation__item
+    `<a href="#${filter}" class="main-navigation__item
      ${isChecked ? 'main-navigation__item--active' : ''}">
-      ${name === 'all' ? 'All Movies' : name.charAt(0).toUpperCase()}${name === 'all' ? '' : name.slice(1)}
+      ${FilterDictionary[filter]}
 
-      <span class="main-navigation__item-count ${name === 'all' ? 'visually-hidden' : ''}"
-      >
-      ${count}
-      </span>
+      ${filter === 'all' ? '' :
+      `<span class="main-navigation__item-count">${count}</span>`}
      </a>`
   );
 }
 
 function createFiltersTemplate(filterItems) {
 
-  const filterItemsTemplate = filterItems
-    .map((filter, index) => createFilterItemTemplate(filter, index === 0))
+  const filterItemsTemplate = Object.entries(filterItems)
+    .map(([filter, count], index) => createFilterItemTemplate(filter,count, index === 0))
     .join('');
 
   return (

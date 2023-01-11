@@ -1,114 +1,158 @@
-import { FILM_COUNT_PER_STEP } from '../const.js';
-import {render} from '../framework/render.js';
-import { isEscapeEvent } from '../utils/utils.js';
-import CardView from '../view/card-view.js';
+import { FILM_COUNT_PER_STEP, SortType } from '../const.js';
+import { render, RenderPosition, remove } from '../framework/render.js';
+import { sortByYear, updateItem } from '../utils/utils.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
-import FilmPopupView from '../view/film-popup-view.js';
 import FilmSectionView from '../view/film-section-view.js';
+import FiltersView from '../view/filters-view.js';
 import HiddenTitleView from '../view/hidden-title-view.js';
 import NoFilmsView from '../view/no-films-view.js';
-import ShowMoreButtonView from '../view/show-more-button-view.js';
+import SortView from '../view/sort-view.js';
+import FilmPresenter from './film-presenter.js';
+import ShowMorePresenter from './show-more-presenter.js';
 
 export default class FilmsPresenter {
   #filmsContainer = null;
   #filmsModel = null;
   #commentsModel = null;
-  #showMoreButtonComponent = null;
+  #filters = null;
+  #filmPresenter = new Map();
+
   #catalogFilms = [];
   #commentsList = [];
 
-  #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmSection = new FilmSectionView();
   #filmList = new FilmListView();
   #filmListContainer = new FilmListContainerView();
+  #noFilmsComponent = new NoFilmsView();
+  #sortComponent = null;
+  #currentSortType = SortType.DEFAULT;
+  #sourcedFilms = [];
 
-  constructor({filmsContainer, filmsModel, commentsModel}) {
+
+  constructor({filmsContainer, filmsModel, commentsModel, filters}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
+    this.#filters = filters;
   }
 
   init() {
     this.#catalogFilms = [...this.#filmsModel.films];
     this.#commentsList = [...this.#commentsModel.comments];
+    this.#sourcedFilms = [...this.#filmsModel.films];
     render(this.#filmSection, this.#filmsContainer);
     render(this.#filmList, this.#filmSection.element);
     render(new HiddenTitleView(), this.#filmList.element);
     render(this.#filmListContainer, this.#filmList.element);
 
+    this.#renderSort();
+    this.#renderFilters(this.#filters);
+
     this.#renderFilmList();
   }
 
-  #handleShowMoreButtonClick = () => {
-    this.#catalogFilms
-      .slice(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP)
-      .forEach((film) => this.#renderFilm(film));
-
-    this.#renderedFilmCount += FILM_COUNT_PER_STEP;
-
-    if (this.#renderedFilmCount >= this.#catalogFilms.length) {
-      this.#showMoreButtonComponent.element.remove();
-      this.#showMoreButtonComponent.removeElement();
-    }
-  };
-
-  #renderFilm(film) {
-    const escKeyDownHandler = (evt) => {
-      if (isEscapeEvent(evt)) {
-        evt.preventDefault();
-        onClose();
-      }
-    };
-
-    function onClose() {
-      removePopup();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    }
-
-    const closeButtonHandler = () => onClose();
-
-    const filmPopup = new FilmPopupView({
-      film,
-      comments: this.#commentsList,
-      onCloseClick: closeButtonHandler,
-    });
-
-    const filmComponent = new CardView({
-      film,
-      onOpenClick: appendPopup
-    });
-
-    function appendPopup() {
-      document.body.appendChild(filmPopup.element);
-      document.body.classList.add('hide-overflow');
-      document.addEventListener('keydown', escKeyDownHandler);
-    }
-
-    function removePopup() {
-      document.body.removeChild(filmPopup.element);
-      document.body.classList.remove('hide-overflow');
-      document.removeEventListener('keydown', escKeyDownHandler);
-    }
-
-    render(filmComponent, this.#filmListContainer.element);
+  #renderFilters(filters) {
+    render(new FiltersView({filters}), this.#filmsContainer, RenderPosition.AFTERBEGIN);
   }
 
-  #renderFilmList() {
-    if (this.#catalogFilms.length <= 0) {
-      render(new NoFilmsView(), this.#filmList.element);
+  #sortFilms(sortType) {
+    switch (sortType) {
+      case SortType.DATE:
+        //функция с колбэком
+        this.#catalogFilms.sort(sortByYear);
+        break;
+      case SortType.RATING:
+        //как было до
+        this.#catalogFilms.sort((filmA, filmB) => filmB.filmInfo.rating - filmA.filmInfo.rating);
+        break;
+      case SortType.DEFAULT:
+        this.#catalogFilms = [...this.#sourcedFilms];
+        break;
+      default:
+        throw new Error('Unknown state!');
+    }
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
       return;
     }
 
-    for (let i = 0; i < Math.min(this.#catalogFilms.length, FILM_COUNT_PER_STEP); i++) {
-      this.#renderFilm(this.#catalogFilms[i]);
+    this.#sortFilms(sortType);
+    this.#clearFilmList();
+    this.#renderFilmList();
+  };
+
+  #renderSort() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
+    render(this.#sortComponent, this.#filmsContainer, RenderPosition.AFTERBEGIN);
+  }
+
+  #handleFilmChange = (updatedFilm) => {
+    this.#catalogFilms = updateItem(this.#catalogFilms, updatedFilm);
+    this.#sourcedFilms = updateItem(this.#sourcedFilms, updatedFilm);
+    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm);
+  };
+
+  #handleModeChange = () => {
+    this.#filmPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  #renderFilm(film) {
+    const filmPresenter = new FilmPresenter({
+      filmListContainer: this.#filmListContainer.element,
+      onDataChange: this.#handleFilmChange,
+      onModeChange: this.#handleModeChange,
+      comments: this.#commentsList
+    });
+
+    filmPresenter.init(film);
+    this.#filmPresenter.set(film.id, filmPresenter);
+  }
+
+
+  #clearFilmList() {
+    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.clear();
+    remove(this.#renderShowMoreButton);
+  }
+
+
+  #renderFilmList() {
+    if (this.#catalogFilms.length === 0) {
+      this.#renderNoFilms();
+      return;
     }
 
+    this.#renderFilms(0, Math.min(this.#catalogFilms.length, FILM_COUNT_PER_STEP));
+
     if (this.#catalogFilms.length > FILM_COUNT_PER_STEP) {
-      this.#showMoreButtonComponent = new ShowMoreButtonView({
-        onClick: this.#handleShowMoreButtonClick
-      });
-      render(this.#showMoreButtonComponent, this.#filmList.element);
+      this.#renderShowMoreButton();
     }
+  }
+
+  #renderFilms = (from, to) => {
+    this.#catalogFilms
+      .slice(from, to)
+      .forEach((film) => this.#renderFilm(film));
+  };
+
+  #renderNoFilms() {
+    render(this.#noFilmsComponent, this.#filmList.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderShowMoreButton() {
+    const showMorePresenter = new ShowMorePresenter ({
+      renderFilms: this.#renderFilms,
+      filmList: this.#filmList.element,
+      maxFilmsAmount: this.#catalogFilms.length
+    });
+
+    showMorePresenter.init();
   }
 }
