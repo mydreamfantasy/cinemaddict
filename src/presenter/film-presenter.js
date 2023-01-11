@@ -40,8 +40,6 @@ export default class FilmPresenter {
       film: this.#film,
       onOpenClick: () => this.#openPopupClickHandler(this.#film),
       onControlsClick: this.#handleControlsClick,
-      // onHistoryClick: this.#handleHistoryClick,
-      // onFavoriteClick: this.#handleFavoriteClick
     });
 
     if (prevFilmComponent === null) {
@@ -54,7 +52,8 @@ export default class FilmPresenter {
       this.#filmPopup = new FilmPopupView({
         film: film,
         comments: this.#commentsList,
-        onCloseClick:() => this.#closePopupClickHandler(film),
+        onCloseClick: () => this.#closePopupClickHandler(film),
+        onControlsClick: this.#handleControlsClick,
       });
       replace(this.#filmPopup, prevPopupComponent);
     }
@@ -74,26 +73,17 @@ export default class FilmPresenter {
     }
   }
 
-  #handleControlsClick = () => {
-    this.#handleDataChange({...this.#film, userDetails: {...this.#film.userDetails}});
+  #handleControlsClick = (updatedDetails) => {
+    this.#handleDataChange({...this.#film, userDetails: updatedDetails});
   };
-
-  // #handleHistoryClick = () => {
-  //   this.#handleDataChange({...this.#film,
-  //     userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
-  // };
-
-  // #handleFavoriteClick = () => {
-  //   this.#handleDataChange({...this.#film,
-  //     userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
-  // };
 
 
   #openPopupClickHandler(film) {
     this.#filmPopup = new FilmPopupView({
       film: film,
       comments: this.#commentsList,
-      onCloseClick:() => this.#closePopupClickHandler(film),
+      onCloseClick: () => this.#closePopupClickHandler(film),
+      onControlsClick: this.#handleControlsClick,
     });
     this.#appendPopup();
   }

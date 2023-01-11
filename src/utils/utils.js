@@ -60,6 +60,10 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
+function sortByYear() {
+  return (filmA, filmB) => filmB.filmInfo.year - filmA.filmInfo.year;
+}
+
 export {
   getRandomArrayElement,
   getRandomPositiveFloat,
@@ -69,4 +73,5 @@ export {
   getTimeFromMins,
   isEscapeEvent,
   updateItem,
+  sortByYear
 };

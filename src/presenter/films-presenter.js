@@ -1,6 +1,6 @@
 import { FILM_COUNT_PER_STEP, SortType } from '../const.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
-import { updateItem } from '../utils/utils.js';
+import { sortByYear, updateItem } from '../utils/utils.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
 import FilmSectionView from '../view/film-section-view.js';
@@ -59,9 +59,11 @@ export default class FilmsPresenter {
   #sortFilms(sortType) {
     switch (sortType) {
       case SortType.DATE:
-        this.#catalogFilms.sort((filmA, filmB) => filmB.filmInfo.year - filmA.filmInfo.year);
+        //функция с колбэком
+        this.#catalogFilms.sort(sortByYear);
         break;
       case SortType.RATING:
+        //как было до
         this.#catalogFilms.sort((filmA, filmB) => filmB.filmInfo.rating - filmA.filmInfo.rating);
         break;
       case SortType.DEFAULT:
@@ -122,7 +124,7 @@ export default class FilmsPresenter {
 
 
   #renderFilmList() {
-    if (this.#catalogFilms.length <= 0) {
+    if (this.#catalogFilms.length === 0) {
       this.#renderNoFilms();
       return;
     }

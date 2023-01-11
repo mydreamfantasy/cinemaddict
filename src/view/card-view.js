@@ -1,3 +1,4 @@
+import { FilterType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createCardTemplate(film) {
@@ -39,18 +40,27 @@ function createCardTemplate(film) {
         <span class="film-card__comments">${commentsCount} comments</span>
       </a>
       <div class="film-card__controls">
-        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${activeWatchlistClassName}"
-        type="button">
+        <button
+          class="film-card__controls-item film-card__controls-item--add-to-watchlist ${activeWatchlistClassName}"
+          type="button"
+          data-control="${FilterType.WATCHLIST}"
+          >
         Add to watchlist
         </button>
 
-        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${activeAsWatchedClassName}"
-        type="button">
+        <button
+          class="film-card__controls-item film-card__controls-item--mark-as-watched ${activeAsWatchedClassName}"
+          type="button"
+          data-control="${FilterType.HISTORY}"
+          >
         Mark as watched
         </button>
 
-        <button class="film-card__controls-item film-card__controls-item--favorite ${activeFavoriteClassName}"
-        type="button">
+        <button
+          class="film-card__controls-item film-card__controls-item--favorite ${activeFavoriteClassName}"
+          type="button"
+          data-control="${FilterType.FAVORITE}"
+          >
         Mark as favorite
         </button>
       </div>
@@ -63,17 +73,12 @@ export default class CardView extends AbstractView {
   #film = null;
   #handleOpenClick = null;
   #handleControlsClick = null;
-  // #handleWatchlistClick = null;
-  // #handleHistoryClick = null;
-  // #handleFavoriteClick = null;
 
   constructor({film, onOpenClick, onControlsClick}) {
     super();
     this.#film = film;
     this.#handleOpenClick = onOpenClick;
     this.#handleControlsClick = onControlsClick;
-    // this.#handleHistoryClick = onHistoryClick;
-    // this.#handleFavoriteClick = onFavoriteClick;
 
 
     this.element.querySelector('.film-card__link')
@@ -88,41 +93,30 @@ export default class CardView extends AbstractView {
     return createCardTemplate(this.#film);
   }
 
-  #changeControls(film) {
-    switch(film) {
-      case film.userDetails.watchlist:
-        // watchlist;
+
+  #controlsClickHandler = (evt) => {
+    evt.preventDefault();
+
+    if (!evt.target.dataset.control) {
+      return;
+    }
+
+    let updatedDetails = this.#film.userDetails;
+
+    switch (evt.target.dataset.control) {
+      case FilterType.WATCHLIST:
+        updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
         break;
-      // case !film.userDetails.alreadyWatched:
-      //   film.userDetails.alreadyWatched;
-      //   break;
-      // case !film.userDetails.favorite:
-      //   film.userDetails.favorite;
-      //   break;
+      case FilterType.HISTORY:
+        updatedDetails = { ...updatedDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
+        break;
+      case FilterType.FAVORITE:
+        updatedDetails = { ...updatedDetails, favorite: !this.#film.userDetails.favorite };
+        break;
       default:
         throw new Error('Unknown state!');
     }
-  }
 
-  #controlsClickHandler = (evt) => {
-    // evt.preventDefault();
-    const btn = evt.target.closest('button');
-    if (btn) {
-      evt.preventDefault();
-      this.#handleControlsClick();
-      this.#changeControls();
-    }
+    this.#handleControlsClick(updatedDetails);
   };
-
-  // #historyClickHandler = (evt) => {
-  //   evt.preventDefault();
-  //   this.#handleHistoryClick();
-  // };
-
-  // #favoriteClickHandler = (evt) => {
-  //   evt.preventDefault();
-  //   this.#handleFavoriteClick();
-  // };
-
-
 }
