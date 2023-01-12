@@ -1,6 +1,6 @@
 import { FILM_COUNT_PER_STEP, SortType } from '../const.js';
-import { render, RenderPosition, remove } from '../framework/render.js';
-import { sortByYear, updateItem } from '../utils/utils.js';
+import { render, RenderPosition } from '../framework/render.js';
+import { updateItem } from '../utils/utils.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
 import FilmSectionView from '../view/film-section-view.js';
@@ -26,6 +26,7 @@ export default class FilmsPresenter {
   #filmListContainer = new FilmListContainerView();
   #noFilmsComponent = new NoFilmsView();
   #sortComponent = null;
+  #showMorePresenter = null;
   #currentSortType = SortType.DEFAULT;
   #sourcedFilms = [];
 
@@ -59,11 +60,9 @@ export default class FilmsPresenter {
   #sortFilms(sortType) {
     switch (sortType) {
       case SortType.DATE:
-        //функция с колбэком
-        this.#catalogFilms.sort(sortByYear);
+        this.#catalogFilms.sort((filmA, filmB) => filmB.filmInfo.year - filmA.filmInfo.year);
         break;
       case SortType.RATING:
-        //как было до
         this.#catalogFilms.sort((filmA, filmB) => filmB.filmInfo.rating - filmA.filmInfo.rating);
         break;
       case SortType.DEFAULT:
@@ -115,14 +114,6 @@ export default class FilmsPresenter {
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
-
-  #clearFilmList() {
-    this.#filmPresenter.forEach((presenter) => presenter.destroy());
-    this.#filmPresenter.clear();
-    remove(this.#renderShowMoreButton);
-  }
-
-
   #renderFilmList() {
     if (this.#catalogFilms.length === 0) {
       this.#renderNoFilms();
@@ -147,12 +138,19 @@ export default class FilmsPresenter {
   }
 
   #renderShowMoreButton() {
-    const showMorePresenter = new ShowMorePresenter ({
+    this.#showMorePresenter = new ShowMorePresenter ({
       renderFilms: this.#renderFilms,
       filmList: this.#filmList.element,
       maxFilmsAmount: this.#catalogFilms.length
     });
 
-    showMorePresenter.init();
+    this.#showMorePresenter.init();
+  }
+
+  #clearFilmList() {
+    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.clear();
+    this.#showMorePresenter.destroy();
+
   }
 }
