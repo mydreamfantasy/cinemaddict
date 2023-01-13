@@ -1,5 +1,5 @@
 import { FILM_COUNT_PER_STEP, SortType } from '../const.js';
-import { render, RenderPosition } from '../framework/render.js';
+import { render, RenderPosition, remove } from '../framework/render.js';
 import { updateItem } from '../utils/utils.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
@@ -43,18 +43,18 @@ export default class FilmsPresenter {
     this.#commentsList = [...this.#commentsModel.comments];
     this.#sourcedFilms = [...this.#filmsModel.films];
     render(this.#filmSection, this.#filmsContainer);
+    this.#renderFilters(this.#filters);
+    this.#renderSort();
     render(this.#filmList, this.#filmSection.element);
     render(new HiddenTitleView(), this.#filmList.element);
     render(this.#filmListContainer, this.#filmList.element);
 
-    this.#renderSort();
-    this.#renderFilters(this.#filters);
 
     this.#renderFilmList();
   }
 
   #renderFilters(filters) {
-    render(new FiltersView({filters}), this.#filmsContainer, RenderPosition.AFTERBEGIN);
+    render(new FiltersView({filters}), this.#filmsContainer, RenderPosition.BEFOREBEGIN);
   }
 
   #sortFilms(sortType) {
@@ -82,14 +82,16 @@ export default class FilmsPresenter {
     this.#sortFilms(sortType);
     this.#clearFilmList();
     this.#renderFilmList();
+    this.#renderSort();
   };
 
   #renderSort() {
     this.#sortComponent = new SortView({
-      onSortTypeChange: this.#handleSortTypeChange
+      onSortTypeChange: this.#handleSortTypeChange,
+      currentSortType: this.#currentSortType
     });
 
-    render(this.#sortComponent, this.#filmsContainer, RenderPosition.AFTERBEGIN);
+    render(this.#sortComponent, this.#filmsContainer, RenderPosition.BEFOREBEGIN);
   }
 
   #handleFilmChange = (updatedFilm) => {
@@ -151,6 +153,7 @@ export default class FilmsPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.destroy());
     this.#filmPresenter.clear();
     this.#showMorePresenter.destroy();
+    remove(this.#sortComponent);
 
   }
 }
