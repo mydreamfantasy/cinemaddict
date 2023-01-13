@@ -1,12 +1,29 @@
 import { SortType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createSortTemplate() {
+function createSortTemplate(currentSortType) {
   return (
     `<ul class="sort">
-      <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
-      <li><a href="#" class="sort__button" data-sort-type="${SortType.DATE}">Sort by date</a></li>
-      <li><a href="#" class="sort__button" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
+      <li>
+        <a href="#" class="sort__button ${currentSortType === SortType.DEFAULT ? 'sort__button--active' : ''}"
+          data-sort-type="${SortType.DEFAULT}">
+        Sort by default
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="sort__button ${currentSortType === SortType.DATE ? 'sort__button--active' : ''}"
+          data-sort-type="${SortType.DATE}">
+        Sort by date
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="sort__button ${currentSortType === SortType.RATING ? 'sort__button--active' : ''}"
+          data-sort-type="${SortType.RATING}">
+        Sort by rating
+        </a>
+      </li>
     </ul>
     `
   );
@@ -14,16 +31,17 @@ function createSortTemplate() {
 
 export default class SortView extends AbstractView {
   #handleSortTypeChange = null;
+  #currentSortType = null;
 
-  constructor({onSortTypeChange}) {
+  constructor({onSortTypeChange, currentSortType}) {
     super();
     this.#handleSortTypeChange = onSortTypeChange;
-
+    this.#currentSortType = currentSortType;
     this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }
 
   get template() {
-    return createSortTemplate();
+    return createSortTemplate(this.#currentSortType);
   }
 
   #sortTypeChangeHandler = (evt) => {
@@ -32,7 +50,6 @@ export default class SortView extends AbstractView {
     }
 
     evt.preventDefault();
-    this.element.querySelector('.sort__button').classList.add('sort__button--active');
     this.#handleSortTypeChange(evt.target.dataset.sortType);
   };
 }
