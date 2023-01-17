@@ -49,7 +49,6 @@ export default class FilmsPresenter {
     render(new HiddenTitleView(), this.#filmList.element);
     render(this.#filmListContainer, this.#filmList.element);
 
-
     this.#renderFilmList();
   }
 

@@ -139,12 +139,17 @@ const AGE = [
   18
 ];
 
-
 const NoFilms = {
   ALL_FILMS: 'There are no movies in our database',
   WATCHLIST: 'There are no movies to watch now',
   HISTORY: 'There are no watched movies now',
   FAVORITE:'There are no favorite movies now',
+};
+
+const TitlesSection = {
+  ALL_MOVIES: 'All movies. Upcoming',
+  TOP_RATED: 'Top rated',
+  MOST_COMMENTED: 'Most commented'
 };
 
 const FilterType = {
@@ -221,4 +226,5 @@ export {
   TOP_COMMENT_COUNT,
   TOP_RATED_COUNT,
   SortType,
+  TitlesSection
 };
