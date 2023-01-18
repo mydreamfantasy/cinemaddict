@@ -41,7 +41,6 @@ import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 
 const counterComments = makeCounterIndex();
-// const counterFilms = makeCounterIndex();
 
 const createComment = () => ({
   id: `${counterComments()}`,

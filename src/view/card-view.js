@@ -2,6 +2,7 @@ import { FilterType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createCardTemplate(film) {
+
   const {
     title,
     rating,
@@ -10,7 +11,6 @@ function createCardTemplate(film) {
     genre,
     img,
     description,
-    commentsCount
   } = film.filmInfo;
 
   const {
@@ -37,7 +37,7 @@ function createCardTemplate(film) {
         </p>
         <img src="${img}" alt="" class="film-card__poster">
         <p class="film-card__description">${description}</p>
-        <span class="film-card__comments">${commentsCount} comments</span>
+        <span class="film-card__comments">${film.comments.length} comments</span>
       </a>
       <div class="film-card__controls">
         <button
