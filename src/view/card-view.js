@@ -1,4 +1,4 @@
-import { FilterType } from '../const.js';
+import { FilterType, UpdateType, UserAction } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createCardTemplate(film) {
@@ -104,19 +104,32 @@ export default class CardView extends AbstractView {
     let updatedDetails = this.#film.userDetails;
 
     switch (evt.target.dataset.control) {
-      case FilterType.WATCHLIST:
+      case FilterType.WATCHLIST: {
+        // UserAction.UPDATE_COMMENT;
+        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
         break;
-      case FilterType.HISTORY:
+      }
+      case FilterType.HISTORY: {
+        // UserAction.UPDATE_COMMENT;
+        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
         break;
-      case FilterType.FAVORITE:
+      }
+      case FilterType.FAVORITE: {
+        // UserAction.UPDATE_COMMENT;
+        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, favorite: !this.#film.userDetails.favorite };
         break;
+      }
       default:
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(updatedDetails);
+    this.#handleControlsClick(
+      UserAction.UPDATE_COMMENT,
+      UpdateType.MINOR,
+      updatedDetails
+    );
   };
 }

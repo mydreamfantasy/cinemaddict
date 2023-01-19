@@ -1,4 +1,4 @@
-import { EMOJI } from '../const.js';
+import { EMOJI, UpdateType, UserAction } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const createCommentTemplate = (comments) => comments.map((comment) => `
@@ -239,19 +239,29 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     switch (evt.target.id) {
       case 'watchlist':
+        // UserAction.UPDATE_COMMENT;
+        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
         break;
       case 'watched':
+        // UserAction.UPDATE_COMMENT;
+        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
         break;
       case 'favorite':
+        // UserAction.UPDATE_COMMENT;
+        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, favorite: !this.#film.userDetails.favorite };
         break;
       default:
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(updatedDetails);
+    this.#handleControlsClick(
+      UserAction.UPDATE_COMMENT,
+      UpdateType.MINOR,
+      updatedDetails
+    );
   };
 
   #setInnerHandlers = () => {

@@ -29,7 +29,6 @@ export default class FilmPresenter {
     this.#commentsList = comments;
   }
 
-
   init(film) {
     this.#film = film;
 

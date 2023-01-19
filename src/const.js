@@ -172,6 +172,19 @@ const SortType = {
   RATING: 'rating',
 };
 
+const UserAction = {
+  UPDATE_COMMENT: 'UPDATE_COMMENT',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+
 const MIN_RATING = 2.0;
 const MAX_RATING = 10.0;
 const MIN_YEAR = 1900;
@@ -226,5 +239,7 @@ export {
   TOP_COMMENT_COUNT,
   TOP_RATED_COUNT,
   SortType,
-  TitlesSection
+  TitlesSection,
+  UserAction,
+  UpdateType
 };
