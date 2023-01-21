@@ -1,4 +1,4 @@
-import { FilterType, UpdateType, UserAction } from '../const.js';
+import { FilterType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createCardTemplate(film) {
@@ -105,20 +105,14 @@ export default class CardView extends AbstractView {
 
     switch (evt.target.dataset.control) {
       case FilterType.WATCHLIST: {
-        // UserAction.UPDATE_COMMENT;
-        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
         break;
       }
       case FilterType.HISTORY: {
-        // UserAction.UPDATE_COMMENT;
-        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
         break;
       }
       case FilterType.FAVORITE: {
-        // UserAction.UPDATE_COMMENT;
-        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, favorite: !this.#film.userDetails.favorite };
         break;
       }
@@ -127,8 +121,6 @@ export default class CardView extends AbstractView {
     }
 
     this.#handleControlsClick(
-      UserAction.UPDATE_COMMENT,
-      UpdateType.MINOR,
       updatedDetails
     );
   };

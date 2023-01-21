@@ -1,3 +1,4 @@
+import { UpdateType, UserAction } from '../const.js';
 import { render, replace, remove } from '../framework/render.js';
 import { isEscapeEvent } from '../utils/utils.js';
 import CardView from '../view/card-view.js';
@@ -73,7 +74,10 @@ export default class FilmPresenter {
   }
 
   #handleControlsClick = (updatedDetails) => {
-    this.#handleDataChange({...this.#film, userDetails: updatedDetails});
+    this.#handleDataChange(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      {...this.#film, userDetails: updatedDetails});
   };
 
 

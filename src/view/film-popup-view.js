@@ -1,4 +1,5 @@
-import { EMOJI, UpdateType, UserAction } from '../const.js';
+import { EMOJI } from '../const.js';
+import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const createCommentTemplate = (comments) => comments.map((comment) => `
@@ -175,7 +176,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
                 <textarea
                   class="film-details__comment-input"
                   placeholder="Select reaction below and write comment here"
-                  name="comment">${comment}</textarea>
+                  name="comment">${he.encode(comment)}</textarea>
               </label>
 
               <div class="film-details__emoji-list">
@@ -239,18 +240,12 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     switch (evt.target.id) {
       case 'watchlist':
-        // UserAction.UPDATE_COMMENT;
-        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
         break;
       case 'watched':
-        // UserAction.UPDATE_COMMENT;
-        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
         break;
       case 'favorite':
-        // UserAction.UPDATE_COMMENT;
-        // UpdateType.MINOR;
         updatedDetails = { ...updatedDetails, favorite: !this.#film.userDetails.favorite };
         break;
       default:
@@ -258,8 +253,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     }
 
     this.#handleControlsClick(
-      UserAction.UPDATE_COMMENT,
-      UpdateType.MINOR,
       updatedDetails
     );
   };
