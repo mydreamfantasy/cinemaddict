@@ -2,7 +2,6 @@ import {
   getRandomArrayElement,
   getRandomPositiveFloat,
   getRandomPositiveInteger,
-  makeCounterIndex,
   getArray,
   getTimeFromMins
 } from '../utils/utils.js';
@@ -40,10 +39,9 @@ import {
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 
-const counterComments = makeCounterIndex();
 
 const createComment = () => ({
-  id: `${counterComments()}`,
+  id: nanoid(),
   author: `${getRandomArrayElement(AUTHOR)}`,
   comment: `${getRandomArrayElement(COMMENT)}`,
   commentDate: `${dayjs().format(DATE_FORMAT)}`,

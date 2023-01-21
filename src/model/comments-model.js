@@ -20,7 +20,6 @@ export default class CommentsModel {
 
   deleteComment(updateType, update) {
     const index = this.#comments.findIndex((comment) => comment.id === update.id);
-
     if (index === -1) {
       throw new Error('Can\'t delete unexisting task');
     }

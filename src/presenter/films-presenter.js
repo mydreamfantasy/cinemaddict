@@ -95,6 +95,7 @@ export default class FilmsPresenter {
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
       comments: this.comments,
+      onCommentChange: this.#handelViewCommentAction
     });
 
     filmPresenter.init(film);
@@ -110,7 +111,16 @@ export default class FilmsPresenter {
       case UserAction.UPDATE_FILM:
         this.#filmsModel.updateFilm(updateType, update);
         break;
+      default:
+        throw new Error('Unknown state!');
+    }
+  };
 
+  #handelViewCommentAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.DELETE_COMMENT:
+        this.#commentsModel.deleteComment(updateType, update);
+        break;
       default:
         throw new Error('Unknown state!');
     }

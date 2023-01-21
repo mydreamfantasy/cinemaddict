@@ -12,7 +12,7 @@ const createCommentTemplate = (comments) => comments.map((comment) => `
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${comment.author}</span>
         <span class="film-details__comment-day">${comment.commentDate}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-id="${comment.id}">Delete</button>
       </p>
     </div>
   </li>
@@ -196,8 +196,9 @@ export default class FilmPopupView extends AbstractStatefulView {
   #comments = null;
   #handleCloseClick = null;
   #handleControlsClick = null;
+  #handleDeleteClick = null;
 
-  constructor({film, comments, onCloseClick, onControlsClick}) {
+  constructor({film, comments, onCloseClick, onControlsClick, onDeleteClick}) {
     super();
     this.#film = film;
     this.#comments = comments;
@@ -209,12 +210,16 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     this.#handleCloseClick = onCloseClick;
     this.#handleControlsClick = onControlsClick;
+    this.#handleDeleteClick = onDeleteClick;
 
     this.element.querySelector('.film-details__close')
       .addEventListener('click', this.#handleCloseClick);
 
     this.element.querySelector('.film-details__controls')
       .addEventListener('click', this.#controlsClickHandler);
+
+    this.element.querySelector('.film-details__comment-delete')
+      .addEventListener('click', this.#commentDeleteClickHandler);
 
     this.#setInnerHandlers();
   }
@@ -298,5 +303,10 @@ export default class FilmPopupView extends AbstractStatefulView {
     this._setState({
       scrollTop: evt.target.scrollTop,
     });
+  };
+
+  #commentDeleteClickHandler = (evt) =>{
+    evt.preventDefault();
+    this.#handleDeleteClick(evt.target.dataset.id);
   };
 }
