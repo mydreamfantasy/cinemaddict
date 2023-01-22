@@ -20,16 +20,14 @@ export default class FilmPresenter {
   #film = null;
   #handleDataChange = null;
   #handleModeChange = null;
-  #handleCommentChange = null;
   #mode = Mode.DEFAULT;
 
 
-  constructor({filmListContainer, onDataChange, onModeChange, comments, onCommentChange}) {
+  constructor({filmListContainer, onDataChange, onModeChange, comments}) {
     this.#filmListContainer = filmListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
     this.#commentsList = comments;
-    this.#handleCommentChange = onCommentChange;
   }
 
   init(film) {
@@ -56,7 +54,7 @@ export default class FilmPresenter {
         comments: this.#commentsList,
         onCloseClick: () => this.#closePopupClickHandler(film),
         onControlsClick: this.#handleControlsClick,
-        onDeleteClick: () => this.#handleDeleteClick(this.#commentsList)
+        onDeleteClick: this.#handleDeleteClick
       });
       replace(this.#filmPopup, prevPopupComponent);
     }
@@ -89,7 +87,7 @@ export default class FilmPresenter {
       comments: this.#commentsList,
       onCloseClick: () => this.#closePopupClickHandler(film),
       onControlsClick: this.#handleControlsClick,
-      onDeleteClick: () => this.#handleDeleteClick(this.#commentsList)
+      onDeleteClick: this.#handleDeleteClick
     });
     this.#appendPopup();
   }
@@ -120,12 +118,11 @@ export default class FilmPresenter {
     }
   };
 
-  #handleDeleteClick = (comments) => {
-
-    this.#handleCommentChange(
+  #handleDeleteClick = (id) => {
+    this.#handleDataChange(
       UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
-      comments
+      UpdateType.MINOR,
+      id
     );
   };
 }

@@ -218,8 +218,8 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.element.querySelector('.film-details__controls')
       .addEventListener('click', this.#controlsClickHandler);
 
-    this.element.querySelector('.film-details__comment-delete')
-      .addEventListener('click', this.#commentDeleteClickHandler);
+    this.element.querySelectorAll('.film-details__comment-delete')
+      .forEach((el) => el.addEventListener('click', this.#commentDeleteClickHandler));
 
     this.#setInnerHandlers();
   }
@@ -274,6 +274,9 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     this.element.querySelector('.film-details__comment-input')
       .addEventListener('input', this.#commentInputHandler);
+
+    this.element.querySelectorAll('.film-details__comment-delete')
+      .forEach((el) => el.addEventListener('click', this.#commentDeleteClickHandler));
 
     this.element.addEventListener('scroll', this.#scrollHandler);
   };

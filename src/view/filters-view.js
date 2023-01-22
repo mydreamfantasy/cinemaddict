@@ -1,23 +1,23 @@
-import { FilterDictionary } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createFilterItemTemplate(filter, count, isChecked) {
+function createFilterItemTemplate(filter, currentFilterType) {
 
+  const {type, name, count} = filter;
   return (
-    `<a href="#${filter}" class="main-navigation__item
-     ${isChecked ? 'main-navigation__item--active' : ''}">
-      ${FilterDictionary[filter]}
-
-      ${filter === 'all' ? '' :
+    `<a href="#${name}" class="main-navigation__item
+     ${type === currentFilterType ? 'main-navigation__item--active' : ''}"
+     data-filter = "${type}"
+     >
+      ${name}
+      ${name === 'all' ? '' :
       `<span class="main-navigation__item-count">${count}</span>`}
      </a>`
   );
 }
 
-function createFiltersTemplate(filterItems) {
-
-  const filterItemsTemplate = Object.entries(filterItems)
-    .map(([filter, count], index) => createFilterItemTemplate(filter,count, index === 0))
+function createFiltersTemplate(filterItems, currentFilterType) {
+  const filterItemsTemplate = filterItems
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
     .join('');
 
   return (
@@ -30,13 +30,27 @@ function createFiltersTemplate(filterItems) {
 
 export default class FiltersView extends AbstractView {
   #filters = null;
+  #currentFilter = null;
+  #handleFilterTypeChange = null;
 
-  constructor({filters}) {
+  constructor({filters, currentFilterType, onFilterTypeChange}) {
     super();
+
     this.#filters = filters;
+    this.#currentFilter = currentFilterType;
+    this.#handleFilterTypeChange = onFilterTypeChange;
+
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
   }
+
 
   get template() {
-    return createFiltersTemplate(this.#filters);
+    return createFiltersTemplate(this.#filters, this.#currentFilter);
   }
+
+
+  #filterTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFilterTypeChange(evt.target.dataset.filter);
+  };
 }

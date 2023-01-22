@@ -3,7 +3,7 @@ import { render, RenderPosition, remove } from '../framework/render.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
 import FilmSectionView from '../view/film-section-view.js';
-import FiltersView from '../view/filters-view.js';
+import {filter} from '../utils/filter.js';
 import HiddenTitleView from '../view/hidden-title-view.js';
 import NoFilmsView from '../view/no-films-view.js';
 import SortView from '../view/sort-view.js';
@@ -14,7 +14,7 @@ export default class FilmsPresenter {
   #filmsContainer = null;
   #filmsModel = null;
   #commentsModel = null;
-  #filters = null;
+  #filterModel = null;
   #filmPresenter = new Map();
 
   // #catalogFilms = [];
@@ -30,22 +30,29 @@ export default class FilmsPresenter {
   // #sourcedFilms = [];
 
 
-  constructor({filmsContainer, filmsModel, commentsModel, filters}) {
+  constructor({filmsContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
-    this.#filters = filters;
+    this.#filterModel = filterModel;
+
     this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get films() {
+    const filterType = this.#filterModel.filter;
+    const films = this.#filmsModel.films;
+    const filteredFilms = filter[filterType](films);
+
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return [...this.#filmsModel.films].sort((filmA, filmB) => filmB.filmInfo.year - filmA.filmInfo.year);
+        return filteredFilms.sort((filmA, filmB) => filmB.filmInfo.year - filmA.filmInfo.year);
       case SortType.RATING:
-        return [...this.#filmsModel.films].sort((filmA, filmB) => filmB.filmInfo.rating - filmA.filmInfo.rating);
+        return filteredFilms.films.sort((filmA, filmB) => filmB.filmInfo.rating - filmA.filmInfo.rating);
       default:
-        return this.#filmsModel.films;
+        return filteredFilms;
     }
   }
 
@@ -55,15 +62,19 @@ export default class FilmsPresenter {
 
   init() {
     render(this.#filmSection, this.#filmsContainer);
-    this.#renderFilters(this.#filters);
+
     render(new HiddenTitleView(), this.#filmList.element);
     render(this.#filmListContainer, this.#filmList.element);
     this.#renderFilmList();
   }
 
-  #renderFilters(filters) {
-    render(new FiltersView({filters}), this.#filmsContainer, RenderPosition.BEFOREBEGIN);
-  }
+  // #renderFilters() {
+  //   render(new FiltersView({
+  //     filters,
+  //     currentFilterType: 'all',
+  //     onFilterTypeChange: () => {}
+  //   }), this.#filmsContainer, RenderPosition.BEFOREBEGIN);
+  // }
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -81,7 +92,7 @@ export default class FilmsPresenter {
       currentSortType: this.#currentSortType
     });
 
-    render(this.#sortComponent, this.#filmsContainer, RenderPosition.BEFOREBEGIN);
+    render(this.#sortComponent, this.#filmsContainer, RenderPosition.AFTERBEGIN);
   }
 
 
@@ -95,7 +106,6 @@ export default class FilmsPresenter {
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
       comments: this.comments,
-      onCommentChange: this.#handelViewCommentAction
     });
 
     filmPresenter.init(film);
@@ -111,23 +121,18 @@ export default class FilmsPresenter {
       case UserAction.UPDATE_FILM:
         this.#filmsModel.updateFilm(updateType, update);
         break;
-      default:
-        throw new Error('Unknown state!');
-    }
-  };
-
-  #handelViewCommentAction = (actionType, updateType, update) => {
-    switch (actionType) {
+      case UserAction.ADD_COMMENT:
+        this.#commentsModel.addComment(updateType, update);
+        break;
       case UserAction.DELETE_COMMENT:
         this.#commentsModel.deleteComment(updateType, update);
         break;
       default:
-        throw new Error('Unknown state!');
+        throw new Error(`Unknown state!, ${actionType}`);
     }
   };
 
   #handleModelEvent = (updateType, data) => {
-
     switch (updateType) {
       case UpdateType.PATCH:
         this.#filmPresenter.get(data.id).init(data);
@@ -189,6 +194,7 @@ export default class FilmsPresenter {
       return;
     }
 
+    // this.#renderFilters();
     this.#renderSort();
     render(this.#filmList, this.#filmSection.element);
     this.#renderFilms(films.slice(0, Math.min(filmCount, this.#renderedFilmCount)));
