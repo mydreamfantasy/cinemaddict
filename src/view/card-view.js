@@ -120,8 +120,6 @@ export default class CardView extends AbstractView {
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(
-      updatedDetails
-    );
+    this.#handleControlsClick(updatedDetails);
   };
 }

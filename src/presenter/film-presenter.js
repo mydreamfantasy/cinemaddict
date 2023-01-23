@@ -23,14 +23,13 @@ export default class FilmPresenter {
   #mode = Mode.DEFAULT;
 
 
-  constructor({filmListContainer, onDataChange, onModeChange, comments}) {
+  constructor({filmListContainer, onDataChange, onModeChange}) {
     this.#filmListContainer = filmListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
-    this.#commentsList = comments;
   }
 
-  init(film) {
+  init(film, comments) {
     this.#film = film;
 
     const prevFilmComponent = this.#filmComponent;
@@ -38,7 +37,7 @@ export default class FilmPresenter {
 
     this.#filmComponent = new CardView({
       film: this.#film,
-      onOpenClick: () => this.#openPopupClickHandler(this.#film),
+      onOpenClick: () => this.#openPopupClickHandler(this.#film, comments),
       onControlsClick: this.#handleControlsClick,
     });
 
@@ -51,10 +50,11 @@ export default class FilmPresenter {
     if (this.#mode === Mode.OPEN) {
       this.#filmPopup = new FilmPopupView({
         film: film,
-        comments: this.#commentsList,
+        comments,
         onCloseClick: () => this.#closePopupClickHandler(film),
         onControlsClick: this.#handleControlsClick,
-        onDeleteClick: this.#handleDeleteClick
+        onDeleteClick: this.#handleDeleteClick,
+        onAddKey: this.#handleAddKey
       });
       replace(this.#filmPopup, prevPopupComponent);
     }
@@ -81,13 +81,14 @@ export default class FilmPresenter {
       {...this.#film, userDetails: updatedDetails});
   };
 
-  #openPopupClickHandler(film) {
+  #openPopupClickHandler(film, comments) {
     this.#filmPopup = new FilmPopupView({
       film: film,
-      comments: this.#commentsList,
+      comments,
       onCloseClick: () => this.#closePopupClickHandler(film),
       onControlsClick: this.#handleControlsClick,
-      onDeleteClick: this.#handleDeleteClick
+      onDeleteClick: this.#handleDeleteClick,
+      onAddKey: this.#handleAddKey
     });
     this.#appendPopup();
   }
@@ -121,8 +122,16 @@ export default class FilmPresenter {
   #handleDeleteClick = (id) => {
     this.#handleDataChange(
       UserAction.DELETE_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       id
+    );
+  };
+
+  #handleAddKey = (data) => {
+    this.#handleDataChange(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      data
     );
   };
 }

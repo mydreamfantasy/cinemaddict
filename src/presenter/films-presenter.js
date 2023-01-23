@@ -104,11 +104,10 @@ export default class FilmsPresenter {
     const filmPresenter = new FilmPresenter({
       filmListContainer: this.#filmListContainer.element,
       onDataChange: this.#handleViewAction,
-      onModeChange: this.#handleModeChange,
-      comments: this.comments,
+      onModeChange: this.#handleModeChange
     });
 
-    filmPresenter.init(film);
+    filmPresenter.init(film, this.comments);
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
@@ -135,7 +134,7 @@ export default class FilmsPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.id).init(data);
+        this.#filmPresenter.get(data.id).init(data, this.comments);
         break;
       case UpdateType.MINOR:
         this.#clearFilms();

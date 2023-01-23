@@ -9,7 +9,7 @@ function createFilterItemTemplate(filter, currentFilterType) {
      data-filter = "${type}"
      >
       ${name}
-      ${name === 'all' ? '' :
+      ${type === 'all' ? '' :
       `<span class="main-navigation__item-count">${count}</span>`}
      </a>`
   );

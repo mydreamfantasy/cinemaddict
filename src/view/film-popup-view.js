@@ -197,8 +197,9 @@ export default class FilmPopupView extends AbstractStatefulView {
   #handleCloseClick = null;
   #handleControlsClick = null;
   #handleDeleteClick = null;
+  #handleAddKey = null;
 
-  constructor({film, comments, onCloseClick, onControlsClick, onDeleteClick}) {
+  constructor({film, comments, onCloseClick, onControlsClick, onDeleteClick, onAddKey}) {
     super();
     this.#film = film;
     this.#comments = comments;
@@ -211,6 +212,7 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.#handleCloseClick = onCloseClick;
     this.#handleControlsClick = onControlsClick;
     this.#handleDeleteClick = onDeleteClick;
+    this.#handleAddKey = onAddKey;
 
     this.element.querySelector('.film-details__close')
       .addEventListener('click', this.#handleCloseClick);
@@ -220,6 +222,8 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     this.element.querySelectorAll('.film-details__comment-delete')
       .forEach((el) => el.addEventListener('click', this.#commentDeleteClickHandler));
+
+    document.addEventListener('keydown', this.#commentAddHandler);
 
     this.#setInnerHandlers();
   }
@@ -257,9 +261,7 @@ export default class FilmPopupView extends AbstractStatefulView {
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(
-      updatedDetails
-    );
+    this.#handleControlsClick(updatedDetails);
   };
 
   #setInnerHandlers = () => {
@@ -279,6 +281,8 @@ export default class FilmPopupView extends AbstractStatefulView {
       .forEach((el) => el.addEventListener('click', this.#commentDeleteClickHandler));
 
     this.element.addEventListener('scroll', this.#scrollHandler);
+
+    document.addEventListener('keydown', this.#commentAddHandler);
   };
 
   _restoreHandlers() {
@@ -308,8 +312,23 @@ export default class FilmPopupView extends AbstractStatefulView {
     });
   };
 
+  #commentAddHandler = (evt) => {
+    if (evt.key === 'Enter' && (evt.ctrlKey || evt.metaKey)) {
+      evt.preventDefault();
+      const comment = this._state.comment;
+      const emotion = this._state.emotion;
+
+      const userComment = {
+        comment,
+        emotion,
+      };
+
+      this.#handleAddKey({comment: userComment, film: this.#film});
+    }
+  };
+
   #commentDeleteClickHandler = (evt) =>{
     evt.preventDefault();
-    this.#handleDeleteClick(evt.target.dataset.id);
+    this.#handleDeleteClick({id: evt.target.dataset.id, film: this.#film});
   };
 }
