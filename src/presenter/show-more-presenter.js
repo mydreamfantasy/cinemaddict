@@ -25,10 +25,6 @@ export default class ShowMorePresenter {
     render(this.#showMoreButtonComponent, this.#filmList);
   }
 
-  destroy() {
-    remove(this.#showMoreButtonComponent);
-  }
-
   #handleShowMoreButtonClick = () => {
     const filmCount = this.#films.length;
 
@@ -42,4 +38,8 @@ export default class ShowMorePresenter {
       this.#showMoreButtonComponent.element.remove();
     }
   };
+
+  destroy() {
+    remove(this.#showMoreButtonComponent);
+  }
 }

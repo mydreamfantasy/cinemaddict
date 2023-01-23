@@ -1,6 +1,7 @@
 import { EMOJI } from '../const.js';
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import { isCtrlEnterEvent } from '../utils/utils.js';
 
 const createCommentTemplate = (comments) => comments.map((comment) => `
   <li class="film-details__comment">
@@ -197,9 +198,9 @@ export default class FilmPopupView extends AbstractStatefulView {
   #handleCloseClick = null;
   #handleControlsClick = null;
   #handleDeleteClick = null;
-  #handleAddKey = null;
+  #handleAddComment = null;
 
-  constructor({film, comments, onCloseClick, onControlsClick, onDeleteClick, onAddKey}) {
+  constructor({film, comments, onCloseClick, onControlsClick, onDeleteClick, onAddComment}) {
     super();
     this.#film = film;
     this.#comments = comments;
@@ -212,7 +213,7 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.#handleCloseClick = onCloseClick;
     this.#handleControlsClick = onControlsClick;
     this.#handleDeleteClick = onDeleteClick;
-    this.#handleAddKey = onAddKey;
+    this.#handleAddComment = onAddComment;
 
     this.element.querySelector('.film-details__close')
       .addEventListener('click', this.#handleCloseClick);
@@ -222,8 +223,6 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     this.element.querySelectorAll('.film-details__comment-delete')
       .forEach((el) => el.addEventListener('click', this.#commentDeleteClickHandler));
-
-    document.addEventListener('keydown', this.#commentAddHandler);
 
     this.#setInnerHandlers();
   }
@@ -313,7 +312,7 @@ export default class FilmPopupView extends AbstractStatefulView {
   };
 
   #commentAddHandler = (evt) => {
-    if (evt.key === 'Enter' && (evt.ctrlKey || evt.metaKey)) {
+    if (isCtrlEnterEvent(evt)) {
       evt.preventDefault();
       const comment = this._state.comment;
       const emotion = this._state.emotion;
@@ -323,7 +322,8 @@ export default class FilmPopupView extends AbstractStatefulView {
         emotion,
       };
 
-      this.#handleAddKey({comment: userComment, film: this.#film});
+      this.#handleAddComment({comment: userComment, film: this.#film});
+      document.removeEventListener('keydown', this.#commentAddHandler);
     }
   };
 

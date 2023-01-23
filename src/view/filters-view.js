@@ -4,7 +4,7 @@ function createFilterItemTemplate(filter, currentFilterType) {
 
   const {type, name, count} = filter;
   return (
-    `<a href="#${name}" class="main-navigation__item
+    `<a href="#${type}" class="main-navigation__item
      ${type === currentFilterType ? 'main-navigation__item--active' : ''}"
      data-filter = "${type}"
      >
@@ -40,14 +40,12 @@ export default class FiltersView extends AbstractView {
     this.#currentFilter = currentFilterType;
     this.#handleFilterTypeChange = onFilterTypeChange;
 
-    this.element.addEventListener('change', this.#filterTypeChangeHandler);
+    this.element.addEventListener('click', this.#filterTypeChangeHandler);
   }
-
 
   get template() {
     return createFiltersTemplate(this.#filters, this.#currentFilter);
   }
-
 
   #filterTypeChangeHandler = (evt) => {
     evt.preventDefault();

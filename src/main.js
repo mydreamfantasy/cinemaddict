@@ -4,7 +4,6 @@ import FilmsModel from './model/films-model.js';
 import FilmsPresenter from './presenter/films-presenter.js';
 import { render } from './framework/render.js';
 import RankUserView from './view/rank-user-view.js';
-import StatisticView from './view/statistic-view.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 
@@ -19,16 +18,16 @@ const filterPresenter = new FilterPresenter({
   filterModel,
   filmsModel,
 });
+
 const filmsPresenter = new FilmsPresenter({
   filmsContainer: siteMainElement,
+  statisticContainer: siteFooterElement,
   filmsModel,
   commentsModel,
   filterModel
 });
 
-
 render(new RankUserView(), siteHeaderElement);
-render(new StatisticView(), siteFooterElement);
 
 filterPresenter.init();
 filmsPresenter.init();

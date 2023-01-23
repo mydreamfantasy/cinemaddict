@@ -55,6 +55,8 @@ function getTimeFromMins(mins) {
 
 const isEscapeEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
+const isCtrlEnterEvent = (evt) => evt.key === 'Enter' && (evt.ctrlKey || evt.metaKey);
+
 export {
   getRandomArrayElement,
   getRandomPositiveFloat,
@@ -63,4 +65,5 @@ export {
   getArray,
   getTimeFromMins,
   isEscapeEvent,
+  isCtrlEnterEvent
 };

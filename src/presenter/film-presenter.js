@@ -12,7 +12,6 @@ const Mode = {
 
 export default class FilmPresenter {
   #filmListContainer = null;
-  #commentsList = null;
 
   #filmComponent = null;
   #filmPopup = null;
@@ -54,7 +53,7 @@ export default class FilmPresenter {
         onCloseClick: () => this.#closePopupClickHandler(film),
         onControlsClick: this.#handleControlsClick,
         onDeleteClick: this.#handleDeleteClick,
-        onAddKey: this.#handleAddKey
+        onAddComment: this.#handleAddComment
       });
       replace(this.#filmPopup, prevPopupComponent);
     }
@@ -88,7 +87,7 @@ export default class FilmPresenter {
       onCloseClick: () => this.#closePopupClickHandler(film),
       onControlsClick: this.#handleControlsClick,
       onDeleteClick: this.#handleDeleteClick,
-      onAddKey: this.#handleAddKey
+      onAddComment: this.#handleAddComment
     });
     this.#appendPopup();
   }
@@ -127,7 +126,7 @@ export default class FilmPresenter {
     );
   };
 
-  #handleAddKey = (data) => {
+  #handleAddComment = (data) => {
     this.#handleDataChange(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,

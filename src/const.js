@@ -156,7 +156,7 @@ const FilterType = {
   ALL: 'all',
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
-  FAVORITE: 'favorite',
+  FAVORITE: 'favorites',
 };
 
 const FilterDictionary = {
