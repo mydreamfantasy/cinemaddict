@@ -17,7 +17,7 @@ const FILM_TITLE_ORIGINAL = [
 ];
 
 const DESCRIPTION = [
-  'Фильм о невероятных приключениях котов, которым показывают рыбов.',
+  'Фильм о невероятных приключениях котов, которым показывают рыбов. Фильм о невероятных приключениях котов, которым показывают рыбов. Фильм про рыбов',
   'Невероятные истории о которых невозможно молчать, волк, который слабее льва и тигра, впервые выступает в цирке',
   'Это нужно видеть и помнить',
   '"Выключайте интернеты!". История о том, что не всем нужны интернеты, кому-то достаточно телефона',
@@ -156,7 +156,7 @@ const FilterType = {
   ALL: 'all',
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
-  FAVORITE: 'favorite',
+  FAVORITE: 'favorites',
 };
 
 const FilterDictionary = {
@@ -171,6 +171,19 @@ const SortType = {
   DATE: 'date',
   RATING: 'rating',
 };
+
+const UserAction = {
+  UPDATE_COMMENT: 'UPDATE_FILM',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 
 const MIN_RATING = 2.0;
 const MAX_RATING = 10.0;
@@ -189,6 +202,9 @@ const MIN_COUNT = 30;
 const MAX_COUNT = 100000;
 const TOP_RATED_COUNT = 2;
 const TOP_COMMENT_COUNT = 2;
+const TEXT_LIMIT = 140;
+const TEXT_SIZE = 139;
+
 
 export {
   FILM_TITLE,
@@ -226,5 +242,9 @@ export {
   TOP_COMMENT_COUNT,
   TOP_RATED_COUNT,
   SortType,
-  TitlesSection
+  TitlesSection,
+  UserAction,
+  UpdateType,
+  TEXT_SIZE,
+  TEXT_LIMIT
 };

@@ -55,10 +55,7 @@ function getTimeFromMins(mins) {
 
 const isEscapeEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
-
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}
+const isCtrlEnterEvent = (evt) => evt.key === 'Enter' && (evt.ctrlKey || evt.metaKey);
 
 export {
   getRandomArrayElement,
@@ -68,5 +65,5 @@ export {
   getArray,
   getTimeFromMins,
   isEscapeEvent,
-  updateItem,
+  isCtrlEnterEvent
 };

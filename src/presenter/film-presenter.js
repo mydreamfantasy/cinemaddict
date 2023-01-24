@@ -1,3 +1,4 @@
+import { UpdateType, UserAction } from '../const.js';
 import { render, replace, remove } from '../framework/render.js';
 import { isEscapeEvent } from '../utils/utils.js';
 import CardView from '../view/card-view.js';
@@ -11,7 +12,6 @@ const Mode = {
 
 export default class FilmPresenter {
   #filmListContainer = null;
-  #commentsList = null;
 
   #filmComponent = null;
   #filmPopup = null;
@@ -19,18 +19,18 @@ export default class FilmPresenter {
   #film = null;
   #handleDataChange = null;
   #handleModeChange = null;
+  #currentFilterType = null;
   #mode = Mode.DEFAULT;
 
 
-  constructor({filmListContainer, onDataChange, onModeChange, comments}) {
+  constructor({filmListContainer, onDataChange, onModeChange, currentFilterType}) {
     this.#filmListContainer = filmListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
-    this.#commentsList = comments;
+    this.#currentFilterType = currentFilterType;
   }
 
-
-  init(film) {
+  init(film, comments) {
     this.#film = film;
 
     const prevFilmComponent = this.#filmComponent;
@@ -38,8 +38,9 @@ export default class FilmPresenter {
 
     this.#filmComponent = new CardView({
       film: this.#film,
-      onOpenClick: () => this.#openPopupClickHandler(this.#film),
+      onOpenClick: () => this.#openPopupClickHandler(this.#film, comments),
       onControlsClick: this.#handleControlsClick,
+      currentFilterType: this.#currentFilterType,
     });
 
     if (prevFilmComponent === null) {
@@ -51,9 +52,11 @@ export default class FilmPresenter {
     if (this.#mode === Mode.OPEN) {
       this.#filmPopup = new FilmPopupView({
         film: film,
-        comments: this.#commentsList,
+        comments,
         onCloseClick: () => this.#closePopupClickHandler(film),
         onControlsClick: this.#handleControlsClick,
+        onDeleteClick: this.#handleDeleteClick,
+        onAddComment: this.#handleAddComment
       });
       replace(this.#filmPopup, prevPopupComponent);
     }
@@ -73,17 +76,21 @@ export default class FilmPresenter {
     }
   }
 
-  #handleControlsClick = (updatedDetails) => {
-    this.#handleDataChange({...this.#film, userDetails: updatedDetails});
+  #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH) => {
+    this.#handleDataChange(
+      UserAction.UPDATE_FILM,
+      updateType,
+      {...this.#film, userDetails: updatedDetails});
   };
 
-
-  #openPopupClickHandler(film) {
+  #openPopupClickHandler(film, comments) {
     this.#filmPopup = new FilmPopupView({
       film: film,
-      comments: this.#commentsList,
+      comments,
       onCloseClick: () => this.#closePopupClickHandler(film),
       onControlsClick: this.#handleControlsClick,
+      onDeleteClick: this.#handleDeleteClick,
+      onAddComment: this.#handleAddComment
     });
     this.#appendPopup();
   }
@@ -112,6 +119,21 @@ export default class FilmPresenter {
       evt.preventDefault();
       this.#closePopupClickHandler();
     }
+  };
 
+  #handleDeleteClick = (id) => {
+    this.#handleDataChange(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      id
+    );
+  };
+
+  #handleAddComment = (data) => {
+    this.#handleDataChange(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      data
+    );
   };
 }

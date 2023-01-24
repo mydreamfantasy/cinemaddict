@@ -8,13 +8,13 @@ export default class ShowMorePresenter {
   #renderFilms = null;
   #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmList = null;
-  #catalogFilms = null;
   #showMoreButtonComponent = null;
+  #films = null;
 
-  constructor({renderFilms, filmList, maxFilmsAmount}) {
+  constructor({renderFilms, filmList, films}) {
     this.#renderFilms = renderFilms;
     this.#filmList = filmList;
-    this.#catalogFilms = maxFilmsAmount;
+    this.#films = films;
   }
 
   init () {
@@ -25,18 +25,21 @@ export default class ShowMorePresenter {
     render(this.#showMoreButtonComponent, this.#filmList);
   }
 
-  destroy() {
-    remove(this.#showMoreButtonComponent);
-  }
-
   #handleShowMoreButtonClick = () => {
+    const filmCount = this.#films.length;
 
-    this.#renderFilms(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP);
+    const newRenderFilmCount = Math.min(filmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP);
+    const films = this.#films.slice(this.#renderedFilmCount, newRenderFilmCount);
 
-    this.#renderedFilmCount += FILM_COUNT_PER_STEP;
+    this.#renderFilms(films);
+    this.#renderedFilmCount = newRenderFilmCount;
 
-    if (this.#renderedFilmCount >= this.#catalogFilms) {
+    if (this.#renderedFilmCount >= filmCount) {
       this.#showMoreButtonComponent.element.remove();
     }
   };
+
+  destroy() {
+    remove(this.#showMoreButtonComponent);
+  }
 }
