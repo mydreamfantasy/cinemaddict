@@ -52,9 +52,11 @@ export default class FilmsPresenter {
         return filteredFilms.sort((filmA, filmB) => filmB.filmInfo.year - filmA.filmInfo.year);
       case SortType.RATING:
         return filteredFilms.sort((filmA, filmB) => filmB.filmInfo.rating - filmA.filmInfo.rating);
+      case SortType.DEFAULT:
+        return films;
+      default:
+        throw new Error('Unknown state!');
     }
-
-    return filteredFilms;
   }
 
   get comments() {
@@ -105,7 +107,8 @@ export default class FilmsPresenter {
     const filmPresenter = new FilmPresenter({
       filmListContainer: this.#filmListContainer.element,
       onDataChange: this.#handleViewAction,
-      onModeChange: this.#handleModeChange
+      onModeChange: this.#handleModeChange,
+      currentFilterType: this.#filterModel.filter,
     });
 
     filmPresenter.init(film, this.comments);

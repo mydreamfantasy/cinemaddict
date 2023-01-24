@@ -1,4 +1,4 @@
-import { FilterType } from '../const.js';
+import { FilterType, TEXT_LIMIT, TEXT_SIZE, UpdateType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createCardTemplate(film) {
@@ -36,7 +36,9 @@ function createCardTemplate(film) {
           <span class="film-card__genre">${genre}</span>
         </p>
         <img src="${img}" alt="" class="film-card__poster">
-        <p class="film-card__description">${description}</p>
+        <p class="film-card__description">
+          ${description.length > TEXT_LIMIT ? `${description.slice(0, TEXT_SIZE) }...` : description }
+        </p>
         <span class="film-card__comments">${film.comments.length} comments</span>
       </a>
       <div class="film-card__controls">
@@ -73,12 +75,14 @@ export default class CardView extends AbstractView {
   #film = null;
   #handleOpenClick = null;
   #handleControlsClick = null;
+  #currentFilterType = null;
 
-  constructor({film, onOpenClick, onControlsClick}) {
+  constructor({film, onOpenClick, onControlsClick, currentFilterType}) {
     super();
     this.#film = film;
     this.#handleOpenClick = onOpenClick;
     this.#handleControlsClick = onControlsClick;
+    this.#currentFilterType = currentFilterType;
 
 
     this.element.querySelector('.film-card__link')
@@ -102,24 +106,28 @@ export default class CardView extends AbstractView {
     }
 
     let updatedDetails = this.#film.userDetails;
+    let updateType;
 
     switch (evt.target.dataset.control) {
       case FilterType.WATCHLIST: {
         updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
+        updateType = this.#currentFilterType === FilterType.WATCHLIST ? UpdateType.MINOR : UpdateType.PATCH;
         break;
       }
       case FilterType.HISTORY: {
         updatedDetails = { ...updatedDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
+        updateType = this.#currentFilterType === FilterType.HISTORY ? UpdateType.MINOR : UpdateType.PATCH;
         break;
       }
       case FilterType.FAVORITE: {
         updatedDetails = { ...updatedDetails, favorite: !this.#film.userDetails.favorite };
+        updateType = this.#currentFilterType === FilterType.FAVORITE ? UpdateType.MINOR : UpdateType.PATCH;
         break;
       }
       default:
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(updatedDetails);
+    this.#handleControlsClick(updatedDetails, updateType);
   };
 }

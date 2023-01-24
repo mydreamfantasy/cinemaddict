@@ -19,13 +19,15 @@ export default class FilmPresenter {
   #film = null;
   #handleDataChange = null;
   #handleModeChange = null;
+  #currentFilterType = null;
   #mode = Mode.DEFAULT;
 
 
-  constructor({filmListContainer, onDataChange, onModeChange}) {
+  constructor({filmListContainer, onDataChange, onModeChange, currentFilterType}) {
     this.#filmListContainer = filmListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#currentFilterType = currentFilterType;
   }
 
   init(film, comments) {
@@ -38,6 +40,7 @@ export default class FilmPresenter {
       film: this.#film,
       onOpenClick: () => this.#openPopupClickHandler(this.#film, comments),
       onControlsClick: this.#handleControlsClick,
+      currentFilterType: this.#currentFilterType,
     });
 
     if (prevFilmComponent === null) {
@@ -73,10 +76,10 @@ export default class FilmPresenter {
     }
   }
 
-  #handleControlsClick = (updatedDetails) => {
+  #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH) => {
     this.#handleDataChange(
       UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
+      updateType,
       {...this.#film, userDetails: updatedDetails});
   };
 
