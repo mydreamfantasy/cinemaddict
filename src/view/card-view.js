@@ -1,15 +1,15 @@
 import { FilterType, TEXT_LIMIT, TEXT_SIZE, UpdateType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
+import { getTimeFromMins, humanizeYear } from '../utils/utils.js';
 
 function createCardTemplate(film) {
-
   const {
     title,
-    rating,
-    year,
+    totalRating,
+    release,
     duration,
     genre,
-    img,
+    poster,
     description,
   } = film.filmInfo;
 
@@ -29,13 +29,13 @@ function createCardTemplate(film) {
     `<article class="film-card">
       <a class="film-card__link">
         <h3 class="film-card__title">${title}</h3>
-        <p class="film-card__rating">${rating}</p>
+        <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
-          <span class="film-card__year">${year}</span>
-          <span class="film-card__duration">${duration}</span>
-          <span class="film-card__genre">${genre}</span>
+          <span class="film-card__year">${humanizeYear(release.date)}</span>
+          <span class="film-card__duration">${getTimeFromMins(duration)}</span>
+          <span class="film-card__genre">${genre.join(', ')}</span>
         </p>
-        <img src="${img}" alt="" class="film-card__poster">
+        <img src="${poster}" alt="" class="film-card__poster">
         <p class="film-card__description">
           ${description.length > TEXT_LIMIT ? `${description.slice(0, TEXT_SIZE) }...` : description }
         </p>

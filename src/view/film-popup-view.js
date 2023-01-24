@@ -1,7 +1,7 @@
 import { EMOJI } from '../const.js';
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { isCtrlEnterEvent } from '../utils/utils.js';
+import { getTimeFromMins, humanizeReleaseDate, isCtrlEnterEvent } from '../utils/utils.js';
 
 const createCommentTemplate = (comments) => comments.map((comment) => `
   <li class="film-details__comment">
@@ -37,14 +37,15 @@ const createNewCommentTemplate = (currentEmotion) => EMOJI.map((emotion) => (`
 const createFilmPopupTemplate = (film, filmComments, state) => {
   const {emotion, comment} = state;
 
+
   const {
     title,
-    originalTitle,
-    rating,
+    alternativeTitle,
+    totalRating,
     ageRating,
     duration,
-    genres,
-    img,
+    genre,
+    poster,
     director,
     writers,
     actors,
@@ -79,20 +80,20 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="${img}" alt="">
+              <img class="film-details__poster-img" src="${poster}" alt="">
 
-              <p class="film-details__age">${ageRating}</p>
+              <p class="film-details__age">${ageRating}+</p>
             </div>
 
             <div class="film-details__info">
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
                   <h3 class="film-details__title">${title}</h3>
-                  <p class="film-details__title-original">Original: ${originalTitle}</p>
+                  <p class="film-details__title-original">Original: ${alternativeTitle}</p>
                 </div>
 
                 <div class="film-details__rating">
-                  <p class="film-details__total-rating">${rating}</p>
+                  <p class="film-details__total-rating">${totalRating}</p>
                 </div>
               </div>
 
@@ -103,19 +104,19 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${writers}</td>
+                  <td class="film-details__cell">${writers.join(', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${actors}</td>
+                  <td class="film-details__cell">${actors.join(', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${date}</td>
+                  <td class="film-details__cell">${humanizeReleaseDate(date)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Duration</td>
-                  <td class="film-details__cell">${duration}</td>
+                  <td class="film-details__cell">${getTimeFromMins(duration)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
@@ -124,7 +125,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
                 <tr class="film-details__row">
                   <td class="film-details__term">Genres</td>
                   <td class="film-details__cell">
-                    <span class="film-details__genre">${genres}</span>
+                    <span class="film-details__genre">${genre.join(', ')}</span>
                 </td>
                 </tr>
               </table>

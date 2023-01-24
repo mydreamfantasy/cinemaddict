@@ -10,6 +10,8 @@ import SortView from '../view/sort-view.js';
 import FilmPresenter from './film-presenter.js';
 import ShowMorePresenter from './show-more-presenter.js';
 import StatisticView from '../view/statistic-view.js';
+import LoadingView from '../view/loading-view.js';
+import { sortByDate, sortByRating } from '../utils/utils.js';
 
 export default class FilmsPresenter {
   #filmsContainer = null;
@@ -23,12 +25,14 @@ export default class FilmsPresenter {
   #filmSection = new FilmSectionView();
   #filmList = new FilmListView();
   #filmListContainer = new FilmListContainerView();
+  #loadingComponent = new LoadingView();
   #noFilmsComponent = null;
   #sortComponent = null;
   #showMorePresenter = null;
   #statisticComponent = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
+  #isLoading = true;
 
   constructor({filmsContainer, statisticContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
@@ -49,9 +53,9 @@ export default class FilmsPresenter {
 
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return filteredFilms.sort((filmA, filmB) => filmB.filmInfo.year - filmA.filmInfo.year);
+        return filteredFilms.sort(sortByDate);
       case SortType.RATING:
-        return filteredFilms.sort((filmA, filmB) => filmB.filmInfo.rating - filmA.filmInfo.rating);
+        return filteredFilms.sort(sortByRating);
       case SortType.DEFAULT:
         return films;
       default:
@@ -148,6 +152,13 @@ export default class FilmsPresenter {
         this.#clearFilms({resetRenderedFilmCount: true, resetSortType: true});
         this.#renderFilmList();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderFilmList();
+        break;
+      default:
+        throw new Error('Unknown state!');
     }
   };
 
@@ -169,6 +180,10 @@ export default class FilmsPresenter {
     this.#showMorePresenter.init();
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#filmList.element, RenderPosition.AFTERBEGIN);
+  }
+
   #clearFilms({resetRenderedFilmCount = false, resetSortType = false} = {}) {
     const filmCount = this.films.length;
 
@@ -177,6 +192,7 @@ export default class FilmsPresenter {
 
     remove(this.#sortComponent);
     remove(this.#noFilmsComponent);
+    remove(this.#loadingComponent);
     remove(this.#statisticComponent);
 
     if(this.#showMorePresenter) {
@@ -201,6 +217,11 @@ export default class FilmsPresenter {
   #renderFilmList() {
     const filmCount = this.films.length;
     const films = this.films;
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     if (filmCount === 0) {
       this.#renderNoFilms();
