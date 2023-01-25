@@ -2,10 +2,16 @@ import Observable from '../framework/observable.js';
 
 export default class CommentsModel extends Observable{
   #comments = null;
+  #commentsApiService = null;
 
-  constructor(comments) {
+  constructor( {comments, commentsApiService} ) {
     super();
-    this.#comments = comments;
+    this.#comments = comments; //нужно удалить
+    this.#commentsApiService = commentsApiService;
+
+    this.#commentsApiService.comments.then((comments) => {
+      console.log(comments);
+    });
   }
 
   get comments() {
