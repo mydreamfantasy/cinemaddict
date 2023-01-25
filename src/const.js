@@ -147,6 +147,7 @@ const NoFilms = {
 };
 
 const TitlesSection = {
+  LOADING: 'Loading...',
   ALL_MOVIES: 'All movies. Upcoming',
   TOP_RATED: 'Top rated',
   MOST_COMMENTED: 'Most commented'

@@ -22,17 +22,19 @@ export default class FilmsPresenter {
   #filmPresenter = new Map();
 
   #renderedFilmCount = FILM_COUNT_PER_STEP;
+  #loadingComponent = new LoadingView();
   #filmSection = new FilmSectionView();
   #filmList = new FilmListView();
   #filmListContainer = new FilmListContainerView();
-  #loadingComponent = new LoadingView();
+
   #noFilmsComponent = null;
   #sortComponent = null;
   #showMorePresenter = null;
   #statisticComponent = null;
+
+  #isLoading = true;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
-  #isLoading = true;
 
   constructor({filmsContainer, statisticContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
@@ -57,7 +59,7 @@ export default class FilmsPresenter {
       case SortType.RATING:
         return filteredFilms.sort(sortByRating);
       case SortType.DEFAULT:
-        return films;
+        return filteredFilms;
       default:
         throw new Error('Unknown state!');
     }
@@ -164,7 +166,7 @@ export default class FilmsPresenter {
 
   #renderNoFilms() {
     this.#noFilmsComponent = new NoFilmsView({
-      filterType: this.#filterType
+      filterType: this.#filterModel.filter
     });
 
     render(this.#noFilmsComponent, this.#filmList.element, RenderPosition.AFTERBEGIN);
@@ -215,13 +217,15 @@ export default class FilmsPresenter {
   }
 
   #renderFilmList() {
-    const filmCount = this.films.length;
-    const films = this.films;
+    render(this.#filmList, this.#filmSection.element);
 
     if (this.#isLoading) {
       this.#renderLoading();
       return;
     }
+
+    const filmCount = this.films.length;
+    const films = this.films;
 
     if (filmCount === 0) {
       this.#renderNoFilms();
@@ -229,7 +233,7 @@ export default class FilmsPresenter {
     }
 
     this.#renderSort();
-    render(this.#filmList, this.#filmSection.element);
+
     this.#renderFilms(films.slice(0, Math.min(filmCount, this.#renderedFilmCount)));
 
     if (filmCount > this.#renderedFilmCount) {
@@ -237,10 +241,4 @@ export default class FilmsPresenter {
     }
     this.#renderStatisticView();
   }
-  // #clearFilmList() {
-  //   this.#filmPresenter.forEach((presenter) => presenter.destroy());
-  //   this.#filmPresenter.clear();
-  //   this.#showMorePresenter.destroy();
-  //   remove(this.#sortComponent);
-  // }
 }

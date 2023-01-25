@@ -8,10 +8,6 @@ export default class FilmsModel extends Observable {
   constructor({filmsApiService}) {
     super();
     this.#filmsApiService = filmsApiService;
-
-    this.#filmsApiService.films.then((films) => {
-      films.map(this.#adaptToClient);
-    });
   }
 
   get films() {
