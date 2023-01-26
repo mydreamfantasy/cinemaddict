@@ -7,21 +7,19 @@ import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import FilmsApiService from './films-api-service.js';
 import CommentsApiService from './comments-api-service.js';
-
-const AUTHORIZATION = 'Basic kTy9gIdsz2317rD';
-const AUTHORIZATION_COMMENT = 'Basic er883jdzbdw';
-const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict';
+import { AUTHORIZATION, END_POINT } from './const.js';
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 const siteFooterElement = document.querySelector('.footer__statistics');
+
 const filmsModel = new FilmsModel({
   filmsApiService: new FilmsApiService(END_POINT, AUTHORIZATION)
 });
+
 const filterModel = new FilterModel();
-const commentsModel = new CommentsModel({
-  commentsApiService: new CommentsApiService(END_POINT, AUTHORIZATION_COMMENT)
-});
+const commentsModel = new CommentsModel(new CommentsApiService(END_POINT, AUTHORIZATION));
+
 const filterPresenter = new FilterPresenter({
   filterContainer: siteMainElement,
   filterModel,
@@ -39,7 +37,6 @@ const filmsPresenter = new FilmsPresenter({
 
 filterPresenter.init();
 filmsPresenter.init();
-commentsModel.init();
 filmsModel.init()
   .finally(() => {
     render(new RankUserView(), siteHeaderElement);

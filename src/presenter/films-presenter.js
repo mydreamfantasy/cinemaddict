@@ -1,4 +1,4 @@
-import { FILM_COUNT_PER_STEP, FilterType, SortType, UpdateType, UserAction } from '../const.js';
+import { FILM_COUNT_PER_STEP, SortType, UpdateType, UserAction } from '../const.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
@@ -34,7 +34,6 @@ export default class FilmsPresenter {
 
   #isLoading = true;
   #currentSortType = SortType.DEFAULT;
-  #filterType = FilterType.ALL;
 
   constructor({filmsContainer, statisticContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
@@ -63,10 +62,6 @@ export default class FilmsPresenter {
       default:
         throw new Error('Unknown state!');
     }
-  }
-
-  get comments() {
-    return this.#commentsModel.comments;
   }
 
   init() {
@@ -115,9 +110,10 @@ export default class FilmsPresenter {
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
       currentFilterType: this.#filterModel.filter,
+      commentsModel: this.#commentsModel
     });
 
-    filmPresenter.init(film, this.comments);
+    filmPresenter.init(film);
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
@@ -126,6 +122,7 @@ export default class FilmsPresenter {
   };
 
   #handleViewAction = (actionType, updateType, update) => {
+    // console.log(actionType, updateType, update)
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this.#filmsModel.updateFilm(updateType, update);
@@ -141,10 +138,11 @@ export default class FilmsPresenter {
     }
   };
 
-  #handleModelEvent = (updateType, data) => {
+  #handleModelEvent = async (updateType, data) => {
+
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.id).init(data, this.comments);
+        await this.#filmPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
         this.#clearFilms();

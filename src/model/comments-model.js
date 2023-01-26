@@ -1,38 +1,55 @@
 import Observable from '../framework/observable.js';
 
 export default class CommentsModel extends Observable{
-  #comments = null;
   #commentsApiService = null;
+  #comments = [];
 
-  constructor( {comments, commentsApiService} ) {
+  constructor(commentsApiService) {
     super();
-    this.#comments = comments; //нужно удалить
     this.#commentsApiService = commentsApiService;
-
-    this.#commentsApiService.comments.then((comments) => {
-      console.log(comments);
-    });
   }
+
 
   get comments() {
     return this.#comments;
   }
 
-  addComment(updateType, update) {
-    this.#comments = [
-      update.comment,
-      ...this.#comments,
-    ];
-    this._notify(updateType, update.film);
+  async init(id) {
+
+    this.#comments = await this.#commentsApiService.loadComments(id);
   }
 
-  deleteComment(updateType, update) {
-    const index = this.#comments.findIndex((comment) => comment.id === update.id);
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting task');
+  async addComment(updateType, update) {
+    let newComment;
+
+    try {
+      newComment = await this.#commentsApiService.addComment(update.comment, update.film);
+      // console.log(update);
+      this._notify(updateType, update.film);
+    }
+    catch(err) {
+      throw new Error('Can\'t add comment');
     }
 
-    this.#comments = this.#comments.filter((comment) => comment.id !== update.id);
-    this._notify(updateType, update.film);
+    this.#comments = [
+      newComment,
+      ...this.#comments,
+    ];
+
+  }
+
+  async deleteComment(updateType, update) {
+    const index = this.#comments.findIndex((comment) => comment.id === update.id);
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting comment');
+    }
+
+    try{
+      await this.#commentsApiService.deleteComment(update);
+      this.#comments = this.#comments.filter((comment) => comment.id !== update.id);
+      this._notify(updateType, update.film);
+    } catch (err) {
+      throw new Error('Can\'t delete comment');
+    }
   }
 }

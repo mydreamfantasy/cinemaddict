@@ -1,4 +1,4 @@
-import { EMOJI } from '../const.js';
+import { EMOJI, UpdateType, FilterType } from '../const.js';
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getTimeFromMins, humanizeReleaseDate, isCtrlEnterEvent } from '../utils/utils.js';
@@ -12,7 +12,7 @@ const createCommentTemplate = (comments) => comments.map((comment) => `
       <p class="film-details__comment-text">${comment.comment}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${comment.author}</span>
-        <span class="film-details__comment-day">${comment.commentDate}</span>
+        <span class="film-details__comment-day">${humanizeReleaseDate(comment.date)}</span>
         <button class="film-details__comment-delete" data-id="${comment.id}">Delete</button>
       </p>
     </div>
@@ -139,6 +139,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               class="film-details__control-button film-details__control-button--watchlist ${activeWatchlistClassName}"
               id="watchlist"
               name="watchlist"
+              data-control="${FilterType.WATCHLIST}"
               >
               Add to watchlist
             </button>
@@ -147,6 +148,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               class="film-details__control-button film-details__control-button--watched ${activeAsWatchedClassName}"
               id="watched"
               name="watched"
+              data-control="${FilterType.HISTORY}"
               >
               Already watched
             </button>
@@ -155,6 +157,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               class="film-details__control-button film-details__control-button--favorite ${activeFavoriteClassName}"
               id="favorite"
               name="favorite"
+              data-control="${FilterType.FAVORITE}"
               >
               Add to favorites
             </button>
@@ -200,11 +203,13 @@ export default class FilmPopupView extends AbstractStatefulView {
   #handleControlsClick = null;
   #handleDeleteClick = null;
   #handleAddComment = null;
+  #currentFilterType = null;
 
-  constructor({film, comments, onCloseClick, onControlsClick, onDeleteClick, onAddComment}) {
+  constructor({film, comments, onCloseClick, onControlsClick, currentFilterType, onDeleteClick, onAddComment}) {
     super();
     this.#film = film;
     this.#comments = comments;
+    this.#currentFilterType = currentFilterType;
     this._setState ({
       emotion: null,
       comment: '',
@@ -246,22 +251,29 @@ export default class FilmPopupView extends AbstractStatefulView {
     }
 
     let updatedDetails = this.#film.userDetails;
+    let updateType;
 
-    switch (evt.target.id) {
-      case 'watchlist':
+    switch (evt.target.dataset.control) {
+      case FilterType.WATCHLIST: {
         updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
+        updateType = this.#currentFilterType === FilterType.WATCHLIST ? UpdateType.MINOR : UpdateType.PATCH;
         break;
-      case 'watched':
+      }
+      case FilterType.HISTORY: {
         updatedDetails = { ...updatedDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
+        updateType = this.#currentFilterType === FilterType.HISTORY ? UpdateType.MINOR : UpdateType.PATCH;
         break;
-      case 'favorite':
+      }
+      case FilterType.FAVORITE: {
         updatedDetails = { ...updatedDetails, favorite: !this.#film.userDetails.favorite };
+        updateType = this.#currentFilterType === FilterType.FAVORITE ? UpdateType.MINOR : UpdateType.PATCH;
         break;
+      }
       default:
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(updatedDetails);
+    this.#handleControlsClick(updatedDetails, updateType);
   };
 
   #setInnerHandlers = () => {
