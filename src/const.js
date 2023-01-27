@@ -80,7 +80,7 @@ const TOP_COMMENT_COUNT = 2;
 const TEXT_LIMIT = 140;
 const TEXT_SIZE = 139;
 
-const AUTHORIZATION = 'Basic kTy9gIdsz2317rD';
+const AUTHORIZATION = 'Basic kTy9gIdsz2327rD';
 const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict';
 
 

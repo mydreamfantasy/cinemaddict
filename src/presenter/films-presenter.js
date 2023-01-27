@@ -139,7 +139,7 @@ export default class FilmsPresenter {
   };
 
   #handleModelEvent = async (updateType, data) => {
-
+    // console.log(data);
     switch (updateType) {
       case UpdateType.PATCH:
         await this.#filmPresenter.get(data.id).init(data);
