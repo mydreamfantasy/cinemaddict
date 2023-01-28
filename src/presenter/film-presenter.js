@@ -63,6 +63,7 @@ export default class FilmPresenter {
 
       });
       replace(this.#filmPopup, prevPopupComponent);
+      // this.#mode = Mode.DEFAULT;
     }
 
     remove(prevFilmComponent);
@@ -77,6 +78,24 @@ export default class FilmPresenter {
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
       this.#closePopupClickHandler();
+    }
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.OPEN) {
+      this.#filmPopup.updateElement({
+        isDisabled: true,
+        // isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.OPEN) {
+      this.#filmPopup.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
     }
   }
 

@@ -41,4 +41,3 @@ filmsModel.init()
   .finally(() => {
     render(new RankUserView(), siteHeaderElement);
   });
-

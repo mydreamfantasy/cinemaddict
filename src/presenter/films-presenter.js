@@ -122,15 +122,17 @@ export default class FilmsPresenter {
   };
 
   #handleViewAction = (actionType, updateType, update) => {
-    // console.log(actionType, updateType, update)
     switch (actionType) {
       case UserAction.UPDATE_FILM:
+        this.#filmPresenter.get(update.id).setSaving();
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
+        this.#filmPresenter.setSaving();
         this.#commentsModel.addComment(updateType, update);
         break;
       case UserAction.DELETE_COMMENT:
+        this.#filmPresenter.get(update.id).setDeleting();
         this.#commentsModel.deleteComment(updateType, update);
         break;
       default:
@@ -138,11 +140,10 @@ export default class FilmsPresenter {
     }
   };
 
-  #handleModelEvent = async (updateType, data) => {
-    // console.log(data);
+  #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        await this.#filmPresenter.get(data.id).init(data);
+        this.#filmPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
         this.#clearFilms();
