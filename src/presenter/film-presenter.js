@@ -85,7 +85,6 @@ export default class FilmPresenter {
     if (this.#mode === Mode.OPEN) {
       this.#filmPopup.updateElement({
         isDisabled: true,
-        isSaving: true,
       });
     }
   }
@@ -133,7 +132,6 @@ export default class FilmPresenter {
       UserAction.UPDATE_FILM,
       updateType,
       {...this.#film, userDetails: updatedDetails},
-      this.#scrollTop,
     );
   };
 
@@ -182,16 +180,15 @@ export default class FilmPresenter {
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
       id,
-      this.#scrollTop,
     );
   };
 
   #handleAddComment = (data) => {
+    // console.log(data);
     this.#handleDataChange(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
       data,
-      this.#scrollTop,
     );
   };
 }

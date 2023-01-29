@@ -112,11 +112,12 @@ export default class FilmsPresenter {
 
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
+    // console.log(update)
     switch (actionType) {
       case UserAction.UPDATE_FILM:
+
         this.#filmPresenter.get(update.id).setSaving();
         try {
-          // scrollTop,
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
           this.#filmPresenter.get(update.id).setAborting('updateFilm');
@@ -134,7 +135,6 @@ export default class FilmsPresenter {
       case UserAction.DELETE_COMMENT:
         this.#filmPresenter.get(update.film.id).setDeleting();
         try {
-          // scrollTop;
           await this.#commentsModel.deleteComment(updateType, update);
         } catch(err) {
           this.#filmPresenter.get(update.film.id).setAborting('deleteComment');

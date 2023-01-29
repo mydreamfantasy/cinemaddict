@@ -268,7 +268,7 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     switch (evt.target.dataset.control) {
       case FilterType.WATCHLIST: {
-        updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
+        updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist};
         updateType = this.#currentFilterType === FilterType.WATCHLIST ? UpdateType.MINOR : UpdateType.PATCH;
         break;
       }
@@ -286,7 +286,7 @@ export default class FilmPopupView extends AbstractStatefulView {
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(updatedDetails, updateType);
+    this.#handleControlsClick(updatedDetails, updateType, {scroll: this._state.scrollTop});
   };
 
   #setInnerHandlers = () => {
@@ -367,14 +367,14 @@ export default class FilmPopupView extends AbstractStatefulView {
         emotion,
       };
 
-      this.#handleAddComment({comment: userComment, film: this.#film});
+      this.#handleAddComment({comment: userComment, film: this.#film, scroll: this._state.scrollTop});
       document.removeEventListener('keydown', this.#commentAddHandler);
     }
   };
 
   #commentDeleteClickHandler = (evt) =>{
     evt.preventDefault();
-    this.#handleDeleteClick({id: evt.target.dataset.id, film: this.#film});
+    this.#handleDeleteClick({id: evt.target.dataset.id, film: this.#film, scroll: this._state.scrollTop});
   };
 
   #scrollHandler = (evt) => {
