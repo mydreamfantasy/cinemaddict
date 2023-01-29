@@ -6,14 +6,14 @@ import { getTimeFromMins, humanizeReleaseDate, isCtrlEnterEvent } from '../utils
 const createCommentTemplate = (comments, isDeleting, isDisabled) => comments.map((comment) => `
   <li class="film-details__comment">
     <span class="film-details__comment-emoji">
-      <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
+      <img src="./images/emoji/${he.encode(comment.emotion)}.png" width="55" height="55" alt="emoji-smile">
     </span>
     <div>
-      <p class="film-details__comment-text">${comment.comment}</p>
+      <p class="film-details__comment-text">${he.encode(comment.comment)}</p>
       <p class="film-details__comment-info">
-        <span class="film-details__comment-author">${comment.author}</span>
-        <span class="film-details__comment-day">${humanizeReleaseDate(comment.date)}</span>
-        <button class="film-details__comment-delete" data-id="${comment.id}" ${isDisabled ? 'disabled' : ''}>
+        <span class="film-details__comment-author">${he.encode(comment.author)}</span>
+        <span class="film-details__comment-day">${he.encode(humanizeReleaseDate(comment.date))}</span>
+        <button class="film-details__comment-delete" data-id="${he.encode(comment.id)}" ${isDisabled ? 'disabled' : ''}>
         ${isDeleting ? 'Deleting...' : 'Delete'}
         </button>
       </p>
@@ -21,25 +21,26 @@ const createCommentTemplate = (comments, isDeleting, isDisabled) => comments.map
   </li>
 `).join('');
 
-const createNewCommentTemplate = (currentEmotion) => EMOJI.map((emotion) => (`
+const createNewCommentTemplate = (currentEmotion, isDisabled, isSaving) => EMOJI.map((emotion) => (`
 
     <input
       class="film-details__emoji-item visually-hidden"
       name="comment-emoji"
       type="radio"
-      id="emoji-${emotion}" value="${emotion}"
+      id="emoji-${he.encode(emotion)}" value="${he.encode(emotion)}"
       ${currentEmotion === emotion ? 'checked' : ''}
+      ${isDisabled ? 'disabled' : ''}
+      ${isSaving ? 'disabled' : ''}
       >
     <label
       class="film-details__emoji-label"
-      for="emoji-${emotion}">
-        <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji">
+      for="emoji-${he.encode(emotion)}">
+        <img src="./images/emoji/${he.encode(emotion)}.png" width="30" height="30" alt="emoji">
     </label>
   `)).join('');
 
 const createFilmPopupTemplate = (film, filmComments, state) => {
-  const {emotion, comment, isDeleting, isDisabled} = state;
-
+  const {emotion, comment, isDeleting, isDisabled, isSaving} = state;
 
   const {
     title,
@@ -62,16 +63,14 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
     favorite
   } = film.userDetails;
 
-
   const { date, releaseCountry} = release;
-
 
   const activeWatchlistClassName = watchlist ? 'film-details__control-button--active' : '';
   const activeAsWatchedClassName = alreadyWatched ? 'film-details__control-button--active' : '';
   const activeFavoriteClassName = favorite ? 'film-details__control-button--active' : '';
 
   const commentTemplate = createCommentTemplate(filmComments, isDeleting, isDisabled);
-  const newCommentTemplate = createNewCommentTemplate(emotion, isDisabled);
+  const newCommentTemplate = createNewCommentTemplate(emotion, isDisabled, isSaving);
 
   return (
     `
@@ -83,7 +82,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="${poster}" alt="">
+              <img class="film-details__poster-img" src="${he.encode(poster)}" alt="">
 
               <p class="film-details__age">${ageRating}+</p>
             </div>
@@ -91,8 +90,8 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
             <div class="film-details__info">
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
-                  <h3 class="film-details__title">${title}</h3>
-                  <p class="film-details__title-original">Original: ${alternativeTitle}</p>
+                  <h3 class="film-details__title">${he.encode(title)}</h3>
+                  <p class="film-details__title-original">Original: ${he.encode(alternativeTitle)}</p>
                 </div>
 
                 <div class="film-details__rating">
@@ -103,37 +102,38 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               <table class="film-details__table">
                 <tr class="film-details__row">
                   <td class="film-details__term">Director</td>
-                  <td class="film-details__cell">${director}</td>
+                  <td class="film-details__cell">${he.encode(director)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${writers.join(', ')}</td>
+                  <td class="film-details__cell">${he.encode(writers.join(', '))}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${actors.join(', ')}</td>
+                  <td class="film-details__cell">${he.encode(actors.join(', '))}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${humanizeReleaseDate(date)}</td>
+                  <td class="film-details__cell">${he.encode(humanizeReleaseDate(date))}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Duration</td>
-                  <td class="film-details__cell">${getTimeFromMins(duration)}</td>
+                  <td class="film-details__cell">${he.encode(getTimeFromMins(duration))}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
-                  <td class="film-details__cell">${releaseCountry}</td>
+                  <td class="film-details__cell">${he.encode(releaseCountry)}</td>
                 </tr>
                 <tr class="film-details__row">
-                  <td class="film-details__term">Genres</td>
+                  <td class="film-details__term">
+                    ${genre.length === 1 ? 'Genre' : 'Genres'}</td>
                   <td class="film-details__cell">
-                    <span class="film-details__genre">${genre.join(', ')}</span>
+                    <span class="film-details__genre">${he.encode(genre.join(', '))}</span>
                 </td>
                 </tr>
               </table>
 
-              <p class="film-details__film-description">${description}</p>
+              <p class="film-details__film-description">${he.encode(description)}</p>
             </div>
           </div>
 
@@ -143,6 +143,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               id="watchlist"
               name="watchlist"
               data-control="${FilterType.WATCHLIST}"
+              ${isDisabled ? 'disabled' : ''}
               >
               Add to watchlist
             </button>
@@ -152,6 +153,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               id="watched"
               name="watched"
               data-control="${FilterType.HISTORY}"
+              ${isDisabled ? 'disabled' : ''}
               >
               Already watched
             </button>
@@ -161,6 +163,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               id="favorite"
               name="favorite"
               data-control="${FilterType.FAVORITE}"
+              ${isDisabled ? 'disabled' : ''}
               >
               Add to favorites
             </button>
@@ -175,9 +178,9 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
             <ul class="film-details__comments-list">
               ${commentTemplate}
             </ul>
-            <form class="film-details__new-comment" action="" method="get">
+            <form class="film-details__new-comment" action="" method="get" ${isDisabled ? 'disabled' : ''}>
               <div class="film-details__add-emoji-label">
-               ${emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji">` : ''}
+               ${emotion ? `<img src="./images/emoji/${he.encode(emotion)}.png" width="55" height="55" alt="emoji">` : ''}
               </div>
 
               <label class="film-details__comment-label">
@@ -187,7 +190,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
                   name="comment">${he.encode(comment)}</textarea>
               </label>
 
-              <div class="film-details__emoji-list" ${isDisabled ? 'disabled' : ''}>
+              <div class="film-details__emoji-list">
                 ${newCommentTemplate}
               </div>
             </form>
@@ -207,7 +210,6 @@ export default class FilmPopupView extends AbstractStatefulView {
   #handleDeleteClick = null;
   #handleAddComment = null;
   #currentFilterType = null;
-  // #scrollTop = null;
 
   constructor({film, comments, onCloseClick, onControlsClick, currentFilterType, onDeleteClick, onAddComment}) {
     super();
@@ -218,8 +220,9 @@ export default class FilmPopupView extends AbstractStatefulView {
       emotion: null,
       comment: '',
       scrollTop: 0,
-      isDeleting: null,
-      isDisabled: null,
+      isDeleting: false,
+      isDisabled: false,
+      isSaving: false
     });
 
     this.#handleCloseClick = onCloseClick;
@@ -285,19 +288,6 @@ export default class FilmPopupView extends AbstractStatefulView {
 
   #setInnerHandlers = () => {
     this.element.addEventListener('scroll', this.#scrollHandler);
-
-
-    //  scroll
-
-    // document.addEventListener("DOMContentLoaded", function(evt) {
-    //   let scrollpos = localStorage.getItem('scrollpos');
-    //   if (scrollpos) window.scrollTo(0, scrollpos);
-    // });
-
-    // window.onbeforeunload = function(e) {
-    //   localStorage.setItem('scrollpos', window.scrollY);
-    // };
-
 
     this.element.querySelector('.film-details__close')
       .addEventListener('click', this.#handleCloseClick);
@@ -365,20 +355,4 @@ export default class FilmPopupView extends AbstractStatefulView {
       scrollTop: evt.target.scrollTop,
     });
   };
-
-  // static parsePopupToState(film) {
-  //   return {...film,
-  //     isDisabled: false,
-  //     isDeleting: false,
-  //   }
-  // }
-
-  // static parseStateToTask(state) {
-  //   const film = {...state};
-  //   delete film.isDisabled;
-  //   delete film.isDeleting;
-
-  //   return film
-  // }
-
 }

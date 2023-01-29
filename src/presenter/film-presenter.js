@@ -63,7 +63,6 @@ export default class FilmPresenter {
 
       });
       replace(this.#filmPopup, prevPopupComponent);
-      // this.#mode = Mode.DEFAULT;
     }
 
     remove(prevFilmComponent);
@@ -82,12 +81,11 @@ export default class FilmPresenter {
   }
 
   setSaving() {
-    if (this.#mode === Mode.OPEN) {
-      this.#filmPopup.updateElement({
-        isDisabled: true,
-        // isSaving: true,
-      });
-    }
+    this.#filmPopup.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+
   }
 
   setDeleting() {
@@ -97,6 +95,23 @@ export default class FilmPresenter {
         isDeleting: true,
       });
     }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#filmComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#filmPopup.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#filmPopup.shake(resetFormState);
   }
 
   #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH) => {

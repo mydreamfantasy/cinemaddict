@@ -1,4 +1,4 @@
-import { FILM_COUNT_PER_STEP, SortType, UpdateType, UserAction } from '../const.js';
+import { FILM_COUNT_PER_STEP, SortType, TimeLimit, UpdateType, UserAction } from '../const.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
@@ -12,6 +12,7 @@ import ShowMorePresenter from './show-more-presenter.js';
 import StatisticView from '../view/statistic-view.js';
 import LoadingView from '../view/loading-view.js';
 import { sortByDate, sortByRating } from '../utils/utils.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 export default class FilmsPresenter {
   #filmsContainer = null;
@@ -34,6 +35,11 @@ export default class FilmsPresenter {
 
   #isLoading = true;
   #currentSortType = SortType.DEFAULT;
+  #uiBlocker = new UiBlocker ({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
+
 
   constructor({filmsContainer, statisticContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
@@ -121,23 +127,39 @@ export default class FilmsPresenter {
     films.forEach((film) => this.#renderFilm(film));
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this.#filmPresenter.get(update.id).setSaving();
-        this.#filmsModel.updateFilm(updateType, update);
+        try {
+          await this.#filmsModel.updateFilm(updateType, update);
+        } catch(err) {
+          this.#filmPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_COMMENT:
         this.#filmPresenter.setSaving();
-        this.#commentsModel.addComment(updateType, update);
+        try {
+          await this.#commentsModel.addComment(updateType, update);
+        } catch(err) {
+          this.#filmPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_COMMENT:
         this.#filmPresenter.get(update.id).setDeleting();
-        this.#commentsModel.deleteComment(updateType, update);
+        try {
+          await this.#commentsModel.deleteComment(updateType, update);
+        } catch(err) {
+          this.#filmPresenter.get(update.id).setAborting();
+        }
         break;
       default:
         throw new Error(`Unknown state!, ${actionType}`);
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
