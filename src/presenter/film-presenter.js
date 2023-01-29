@@ -99,7 +99,7 @@ export default class FilmPresenter {
     }
   }
 
-  setAborting() {
+  setAborting(ShakeAction) {
     if (this.#mode === Mode.DEFAULT) {
       this.#filmComponent.shake();
       return;
@@ -113,7 +113,19 @@ export default class FilmPresenter {
       });
     };
 
-    this.#filmPopup.setControlButtonsShake(resetFormState);
+    switch(ShakeAction) {
+      case 'updateFilm':
+        this.#filmPopup.setControlButtonsShake(resetFormState);
+        break;
+      case 'addComment':
+        this.#filmPopup.setFormShake(resetFormState);
+        break;
+      case 'deleteComment':
+        this.#filmPopup.setCommentShake(resetFormState);
+        break;
+      default:
+        throw new Error(`Unknown state!, ${UpdateType}`);
+    }
   }
 
   #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH) => {

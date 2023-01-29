@@ -119,7 +119,7 @@ export default class FilmsPresenter {
           // scrollTop,
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.id).setAborting();
+          this.#filmPresenter.get(update.id).setAborting('updateFilm');
         }
         break;
       case UserAction.ADD_COMMENT:
@@ -128,7 +128,7 @@ export default class FilmsPresenter {
           // scrollTop;
           await this.#commentsModel.addComment(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.film.id).setAborting();
+          this.#filmPresenter.get(update.film.id).setAborting('addComment');
         }
         break;
       case UserAction.DELETE_COMMENT:
@@ -137,7 +137,7 @@ export default class FilmsPresenter {
           // scrollTop;
           await this.#commentsModel.deleteComment(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.film.id).setAborting();
+          this.#filmPresenter.get(update.film.id).setAborting('deleteComment');
         }
         break;
       default:

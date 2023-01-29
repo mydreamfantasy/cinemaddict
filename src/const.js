@@ -45,6 +45,12 @@ const UserAction = {
   DELETE_COMMENT: 'DELETE_COMMENT',
 };
 
+const ShakeAction = [
+  'UPDATE_COMMENT',
+  'ADD_COMMENT',
+  'DELETE_COMMENT',
+];
+
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
@@ -85,4 +91,5 @@ export {
   AUTHORIZATION,
   END_POINT,
   TimeLimit,
+  ShakeAction
 };
