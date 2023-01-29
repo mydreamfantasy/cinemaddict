@@ -1,28 +1,53 @@
+import { UpdateType } from '../const.js';
 import Observable from '../framework/observable.js';
-import { FILM_COUNT } from '../const.js';
-import { getRandomFilm } from '../mock/films.js';
+import { AdaptFilm } from '../utils/adapter.js';
 
 export default class FilmsModel extends Observable {
+  #filmsApiService = null;
+  #films = [];
 
-  #films = Array.from({length: FILM_COUNT}, getRandomFilm);
+  constructor({filmsApiService}) {
+    super();
+    this.#filmsApiService = filmsApiService;
+  }
 
   get films() {
     return this.#films;
   }
 
-  updateFilm(updateType, update) {
+  async init() {
+    try {
+      const films = await this.#filmsApiService.films;
+      this.#films = films.map(this.#adaptToClient);
+    } catch(err) {
+      this.#films = [];
+    }
+    this._notify(UpdateType.INIT);
+  }
+
+  async updateFilm(updateType, update) {
     const index = this.#films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t update unexisting task');
+      throw new Error('Can\'t update unexisting film');
     }
 
-    this.#films = [
-      ...this.#films.slice(0, index),
-      update,
-      ...this.#films.slice(index + 1),
-    ];
+    try {
+      const response = await this.#filmsApiService.updateFilm(update);
+      const updatedFilm = this.#adaptToClient(response);
+      this.#films = [
+        ...this.#films.slice(0, index),
+        updatedFilm,
+        ...this.#films.slice(index + 1),
+      ];
 
-    this._notify(updateType, update);
+      this._notify(updateType, updatedFilm);
+    } catch(err) {
+      throw new Error('Can\'t update film');
+    }
+  }
+
+  #adaptToClient(film) {
+    return AdaptFilm(film);
   }
 }

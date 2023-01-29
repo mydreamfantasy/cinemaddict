@@ -1,9 +1,9 @@
-import { EMOJI } from '../const.js';
+import { EMOJI, UpdateType, FilterType } from '../const.js';
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { isCtrlEnterEvent } from '../utils/utils.js';
+import { getTimeFromMins, humanizeReleaseDate, isCtrlEnterEvent } from '../utils/utils.js';
 
-const createCommentTemplate = (comments) => comments.map((comment) => `
+const createCommentTemplate = (comments, isDeleting, isDisabled) => comments.map((comment) => `
   <li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
@@ -12,14 +12,17 @@ const createCommentTemplate = (comments) => comments.map((comment) => `
       <p class="film-details__comment-text">${comment.comment}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${comment.author}</span>
-        <span class="film-details__comment-day">${comment.commentDate}</span>
-        <button class="film-details__comment-delete" data-id="${comment.id}">Delete</button>
+        <span class="film-details__comment-day">${humanizeReleaseDate(comment.date)}</span>
+        <button class="film-details__comment-delete" data-id="${comment.id}" ${isDisabled ? 'disabled' : ''}>
+        ${isDeleting ? 'Deleting...' : 'Delete'}
+        </button>
       </p>
     </div>
   </li>
 `).join('');
 
 const createNewCommentTemplate = (currentEmotion) => EMOJI.map((emotion) => (`
+
     <input
       class="film-details__emoji-item visually-hidden"
       name="comment-emoji"
@@ -35,16 +38,17 @@ const createNewCommentTemplate = (currentEmotion) => EMOJI.map((emotion) => (`
   `)).join('');
 
 const createFilmPopupTemplate = (film, filmComments, state) => {
-  const {emotion, comment} = state;
+  const {emotion, comment, isDeleting, isDisabled} = state;
+
 
   const {
     title,
-    originalTitle,
-    rating,
+    alternativeTitle,
+    totalRating,
     ageRating,
     duration,
-    genres,
-    img,
+    genre,
+    poster,
     director,
     writers,
     actors,
@@ -66,8 +70,8 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
   const activeAsWatchedClassName = alreadyWatched ? 'film-details__control-button--active' : '';
   const activeFavoriteClassName = favorite ? 'film-details__control-button--active' : '';
 
-  const commentTemplate = createCommentTemplate(filmComments);
-  const newCommentTemplate = createNewCommentTemplate(emotion);
+  const commentTemplate = createCommentTemplate(filmComments, isDeleting, isDisabled);
+  const newCommentTemplate = createNewCommentTemplate(emotion, isDisabled);
 
   return (
     `
@@ -79,20 +83,20 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="${img}" alt="">
+              <img class="film-details__poster-img" src="${poster}" alt="">
 
-              <p class="film-details__age">${ageRating}</p>
+              <p class="film-details__age">${ageRating}+</p>
             </div>
 
             <div class="film-details__info">
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
                   <h3 class="film-details__title">${title}</h3>
-                  <p class="film-details__title-original">Original: ${originalTitle}</p>
+                  <p class="film-details__title-original">Original: ${alternativeTitle}</p>
                 </div>
 
                 <div class="film-details__rating">
-                  <p class="film-details__total-rating">${rating}</p>
+                  <p class="film-details__total-rating">${totalRating}</p>
                 </div>
               </div>
 
@@ -103,19 +107,19 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${writers}</td>
+                  <td class="film-details__cell">${writers.join(', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${actors}</td>
+                  <td class="film-details__cell">${actors.join(', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${date}</td>
+                  <td class="film-details__cell">${humanizeReleaseDate(date)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Duration</td>
-                  <td class="film-details__cell">${duration}</td>
+                  <td class="film-details__cell">${getTimeFromMins(duration)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
@@ -124,7 +128,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
                 <tr class="film-details__row">
                   <td class="film-details__term">Genres</td>
                   <td class="film-details__cell">
-                    <span class="film-details__genre">${genres}</span>
+                    <span class="film-details__genre">${genre.join(', ')}</span>
                 </td>
                 </tr>
               </table>
@@ -138,6 +142,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               class="film-details__control-button film-details__control-button--watchlist ${activeWatchlistClassName}"
               id="watchlist"
               name="watchlist"
+              data-control="${FilterType.WATCHLIST}"
               >
               Add to watchlist
             </button>
@@ -146,6 +151,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               class="film-details__control-button film-details__control-button--watched ${activeAsWatchedClassName}"
               id="watched"
               name="watched"
+              data-control="${FilterType.HISTORY}"
               >
               Already watched
             </button>
@@ -154,6 +160,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
               class="film-details__control-button film-details__control-button--favorite ${activeFavoriteClassName}"
               id="favorite"
               name="favorite"
+              data-control="${FilterType.FAVORITE}"
               >
               Add to favorites
             </button>
@@ -180,7 +187,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
                   name="comment">${he.encode(comment)}</textarea>
               </label>
 
-              <div class="film-details__emoji-list">
+              <div class="film-details__emoji-list" ${isDisabled ? 'disabled' : ''}>
                 ${newCommentTemplate}
               </div>
             </form>
@@ -199,15 +206,20 @@ export default class FilmPopupView extends AbstractStatefulView {
   #handleControlsClick = null;
   #handleDeleteClick = null;
   #handleAddComment = null;
+  #currentFilterType = null;
+  // #scrollTop = null;
 
-  constructor({film, comments, onCloseClick, onControlsClick, onDeleteClick, onAddComment}) {
+  constructor({film, comments, onCloseClick, onControlsClick, currentFilterType, onDeleteClick, onAddComment}) {
     super();
     this.#film = film;
     this.#comments = comments;
+    this.#currentFilterType = currentFilterType;
     this._setState ({
       emotion: null,
       comment: '',
-      scrollTop: 0
+      scrollTop: 0,
+      isDeleting: null,
+      isDisabled: null,
     });
 
     this.#handleCloseClick = onCloseClick;
@@ -227,6 +239,7 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.#setInnerHandlers();
   }
 
+
   get template() {
     const filmComments = this.filmComments;
     return createFilmPopupTemplate(this.#film, filmComments, this._state);
@@ -245,25 +258,47 @@ export default class FilmPopupView extends AbstractStatefulView {
     }
 
     let updatedDetails = this.#film.userDetails;
+    let updateType;
 
-    switch (evt.target.id) {
-      case 'watchlist':
+    switch (evt.target.dataset.control) {
+      case FilterType.WATCHLIST: {
         updatedDetails = { ...updatedDetails, watchlist: !this.#film.userDetails.watchlist };
+        updateType = this.#currentFilterType === FilterType.WATCHLIST ? UpdateType.MINOR : UpdateType.PATCH;
         break;
-      case 'watched':
+      }
+      case FilterType.HISTORY: {
         updatedDetails = { ...updatedDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
+        updateType = this.#currentFilterType === FilterType.HISTORY ? UpdateType.MINOR : UpdateType.PATCH;
         break;
-      case 'favorite':
+      }
+      case FilterType.FAVORITE: {
         updatedDetails = { ...updatedDetails, favorite: !this.#film.userDetails.favorite };
+        updateType = this.#currentFilterType === FilterType.FAVORITE ? UpdateType.MINOR : UpdateType.PATCH;
         break;
+      }
       default:
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(updatedDetails);
+    this.#handleControlsClick(updatedDetails, updateType);
   };
 
   #setInnerHandlers = () => {
+    this.element.addEventListener('scroll', this.#scrollHandler);
+
+
+    //  scroll
+
+    // document.addEventListener("DOMContentLoaded", function(evt) {
+    //   let scrollpos = localStorage.getItem('scrollpos');
+    //   if (scrollpos) window.scrollTo(0, scrollpos);
+    // });
+
+    // window.onbeforeunload = function(e) {
+    //   localStorage.setItem('scrollpos', window.scrollY);
+    // };
+
+
     this.element.querySelector('.film-details__close')
       .addEventListener('click', this.#handleCloseClick);
 
@@ -278,8 +313,6 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     this.element.querySelectorAll('.film-details__comment-delete')
       .forEach((el) => el.addEventListener('click', this.#commentDeleteClickHandler));
-
-    this.element.addEventListener('scroll', this.#scrollHandler);
 
     document.addEventListener('keydown', this.#commentAddHandler);
   };
@@ -304,13 +337,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     });
   };
 
-  #scrollHandler = (evt) => {
-    evt.preventDefault();
-    this._setState({
-      scrollTop: evt.target.scrollTop,
-    });
-  };
-
   #commentAddHandler = (evt) => {
     if (isCtrlEnterEvent(evt)) {
       evt.preventDefault();
@@ -331,4 +357,28 @@ export default class FilmPopupView extends AbstractStatefulView {
     evt.preventDefault();
     this.#handleDeleteClick({id: evt.target.dataset.id, film: this.#film});
   };
+
+  #scrollHandler = (evt) => {
+    evt.preventDefault();
+
+    this._setState({
+      scrollTop: evt.target.scrollTop,
+    });
+  };
+
+  // static parsePopupToState(film) {
+  //   return {...film,
+  //     isDisabled: false,
+  //     isDeleting: false,
+  //   }
+  // }
+
+  // static parseStateToTask(state) {
+  //   const film = {...state};
+  //   delete film.isDisabled;
+  //   delete film.isDeleting;
+
+  //   return film
+  // }
+
 }

@@ -16,6 +16,7 @@ function createFilmListSectionTemplate(title) {
 
 export default class FilmListSectionView extends AbstractView {
   #title = null;
+
   constructor({title}) {
     super();
     this.#title = title;

@@ -20,17 +20,19 @@ export default class FilmPresenter {
   #handleDataChange = null;
   #handleModeChange = null;
   #currentFilterType = null;
+  #commentsModel = null;
   #mode = Mode.DEFAULT;
 
 
-  constructor({filmListContainer, onDataChange, onModeChange, currentFilterType}) {
+  constructor({filmListContainer, onDataChange, onModeChange, currentFilterType, commentsModel}) {
     this.#filmListContainer = filmListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
     this.#currentFilterType = currentFilterType;
+    this.#commentsModel = commentsModel;
   }
 
-  init(film, comments) {
+  init(film) {
     this.#film = film;
 
     const prevFilmComponent = this.#filmComponent;
@@ -38,7 +40,7 @@ export default class FilmPresenter {
 
     this.#filmComponent = new CardView({
       film: this.#film,
-      onOpenClick: () => this.#openPopupClickHandler(this.#film, comments),
+      onOpenClick: () => this.#openPopupClickHandler(this.#film),
       onControlsClick: this.#handleControlsClick,
       currentFilterType: this.#currentFilterType,
     });
@@ -52,13 +54,16 @@ export default class FilmPresenter {
     if (this.#mode === Mode.OPEN) {
       this.#filmPopup = new FilmPopupView({
         film: film,
-        comments,
+        comments: this.#commentsModel.comments,
         onCloseClick: () => this.#closePopupClickHandler(film),
         onControlsClick: this.#handleControlsClick,
+        currentFilterType: this.#currentFilterType,
         onDeleteClick: this.#handleDeleteClick,
-        onAddComment: this.#handleAddComment
+        onAddComment: this.#handleAddComment,
+
       });
       replace(this.#filmPopup, prevPopupComponent);
+      // this.#mode = Mode.DEFAULT;
     }
 
     remove(prevFilmComponent);
@@ -76,6 +81,24 @@ export default class FilmPresenter {
     }
   }
 
+  setSaving() {
+    if (this.#mode === Mode.OPEN) {
+      this.#filmPopup.updateElement({
+        isDisabled: true,
+        // isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.OPEN) {
+      this.#filmPopup.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
   #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH) => {
     this.#handleDataChange(
       UserAction.UPDATE_FILM,
@@ -83,12 +106,14 @@ export default class FilmPresenter {
       {...this.#film, userDetails: updatedDetails});
   };
 
-  #openPopupClickHandler(film, comments) {
+  async #openPopupClickHandler(film) {
+    await this.#commentsModel.init(film.id);
     this.#filmPopup = new FilmPopupView({
       film: film,
-      comments,
+      comments: this.#commentsModel.comments,
       onCloseClick: () => this.#closePopupClickHandler(film),
       onControlsClick: this.#handleControlsClick,
+      currentFilterType: this.#currentFilterType,
       onDeleteClick: this.#handleDeleteClick,
       onAddComment: this.#handleAddComment
     });
