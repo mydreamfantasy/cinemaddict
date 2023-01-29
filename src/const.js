@@ -84,5 +84,5 @@ export {
   Method,
   AUTHORIZATION,
   END_POINT,
-  TimeLimit
+  TimeLimit,
 };

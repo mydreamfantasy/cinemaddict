@@ -22,6 +22,7 @@ export default class FilmPresenter {
   #currentFilterType = null;
   #commentsModel = null;
   #mode = Mode.DEFAULT;
+  #scrollTop = 0;
 
 
   constructor({filmListContainer, onDataChange, onModeChange, currentFilterType, commentsModel}) {
@@ -81,11 +82,12 @@ export default class FilmPresenter {
   }
 
   setSaving() {
-    this.#filmPopup.updateElement({
-      isDisabled: true,
-      isSaving: true,
-    });
-
+    if (this.#mode === Mode.OPEN) {
+      this.#filmPopup.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
   }
 
   setDeleting() {
@@ -111,14 +113,16 @@ export default class FilmPresenter {
       });
     };
 
-    this.#filmPopup.shake(resetFormState);
+    this.#filmPopup.setControlButtonsShake(resetFormState);
   }
 
   #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH) => {
     this.#handleDataChange(
       UserAction.UPDATE_FILM,
       updateType,
-      {...this.#film, userDetails: updatedDetails});
+      {...this.#film, userDetails: updatedDetails},
+      this.#scrollTop,
+    );
   };
 
   async #openPopupClickHandler(film) {
@@ -165,7 +169,8 @@ export default class FilmPresenter {
     this.#handleDataChange(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
-      id
+      id,
+      this.#scrollTop,
     );
   };
 
@@ -173,7 +178,8 @@ export default class FilmPresenter {
     this.#handleDataChange(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
-      data
+      data,
+      this.#scrollTop,
     );
   };
 }

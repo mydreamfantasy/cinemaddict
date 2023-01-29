@@ -52,5 +52,5 @@ export {
   sortByDate,
   sortByRating,
   humanizeYear,
-  humanizeReleaseDate
+  humanizeReleaseDate,
 };

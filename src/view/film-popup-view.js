@@ -3,6 +3,9 @@ import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getTimeFromMins, humanizeReleaseDate, isCtrlEnterEvent } from '../utils/utils.js';
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+const SHAKE_CLASS_NAME = 'shake';
+
 const createCommentTemplate = (comments, isDeleting, isDisabled) => comments.map((comment) => `
   <li class="film-details__comment">
     <span class="film-details__comment-emoji">
@@ -310,6 +313,32 @@ export default class FilmPopupView extends AbstractStatefulView {
   _restoreHandlers() {
     this.#setInnerHandlers();
   }
+
+
+  setControlButtonsShake = () => {
+    this.element.querySelector('.film-details__controls').classList.add(SHAKE_CLASS_NAME);
+
+    setTimeout(() => {
+      this.element.querySelector('.film-details__controls').classList.remove(SHAKE_CLASS_NAME);
+    }, SHAKE_ANIMATION_TIMEOUT);
+  };
+
+  setCommentShake = () => {
+    this.element.querySelector('.film-details__comments-list').classList.add(SHAKE_CLASS_NAME);
+
+    setTimeout(() => {
+      this.element.querySelector('.film-details__comments-list').classList.remove(SHAKE_CLASS_NAME);
+    }, SHAKE_ANIMATION_TIMEOUT);
+  };
+
+  setFormShake = () => {
+    this.element.querySelector('.film-details__new-comment').classList.add(SHAKE_CLASS_NAME);
+
+    setTimeout(() => {
+      this.element.querySelector('.film-details__new-comment').classList.remove(SHAKE_CLASS_NAME);
+    }, SHAKE_ANIMATION_TIMEOUT);
+  };
+
 
   #emotionChangeHandler = (evt) => {
     evt.preventDefault();

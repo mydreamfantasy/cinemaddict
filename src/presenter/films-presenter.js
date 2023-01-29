@@ -110,49 +110,34 @@ export default class FilmsPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.resetView());
   };
 
-  #renderFilm(film) {
-    const filmPresenter = new FilmPresenter({
-      filmListContainer: this.#filmListContainer.element,
-      onDataChange: this.#handleViewAction,
-      onModeChange: this.#handleModeChange,
-      currentFilterType: this.#filterModel.filter,
-      commentsModel: this.#commentsModel
-    });
-
-    filmPresenter.init(film);
-    this.#filmPresenter.set(film.id, filmPresenter);
-  }
-
-  #renderFilms = (films) => {
-    films.forEach((film) => this.#renderFilm(film));
-  };
-
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
-
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this.#filmPresenter.get(update.id).setSaving();
         try {
+          // scrollTop,
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
           this.#filmPresenter.get(update.id).setAborting();
         }
         break;
       case UserAction.ADD_COMMENT:
-        this.#filmPresenter.setSaving();
+        this.#filmPresenter.get(update.film.id).setSaving();
         try {
+          // scrollTop;
           await this.#commentsModel.addComment(updateType, update);
         } catch(err) {
-          this.#filmPresenter.setAborting();
+          this.#filmPresenter.get(update.film.id).setAborting();
         }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#filmPresenter.get(update.id).setDeleting();
+        this.#filmPresenter.get(update.film.id).setDeleting();
         try {
+          // scrollTop;
           await this.#commentsModel.deleteComment(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.id).setAborting();
+          this.#filmPresenter.get(update.film.id).setAborting();
         }
         break;
       default:
@@ -191,6 +176,23 @@ export default class FilmsPresenter {
     });
 
     render(this.#noFilmsComponent, this.#filmList.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderFilms = (films) => {
+    films.forEach((film) => this.#renderFilm(film));
+  };
+
+  #renderFilm(film) {
+    const filmPresenter = new FilmPresenter({
+      filmListContainer: this.#filmListContainer.element,
+      onDataChange: this.#handleViewAction,
+      onModeChange: this.#handleModeChange,
+      currentFilterType: this.#filterModel.filter,
+      commentsModel: this.#commentsModel
+    });
+
+    filmPresenter.init(film);
+    this.#filmPresenter.set(film.id, filmPresenter);
   }
 
   #renderShowMoreButton() {
