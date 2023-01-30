@@ -6,6 +6,12 @@ import { getTimeFromMins, humanizeReleaseDate, isCtrlEnterEvent } from '../utils
 const SHAKE_ANIMATION_TIMEOUT = 600;
 const SHAKE_CLASS_NAME = 'shake';
 
+const ClassName = {
+  CONTROLS: '.film-details__controls',
+  DELETE_COMMENT: '.film-details__comment',
+  NEW_COMMENT: '.film-details__new-comment',
+};
+
 const createCommentTemplate = (comments, isDeleting, isDisabled) => comments.map((comment) => `
   <li class="film-details__comment">
     <span class="film-details__comment-emoji">
@@ -314,28 +320,27 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.#setInnerHandlers();
   }
 
-
   setControlButtonsShake = () => {
-    this.element.querySelector('.film-details__controls').classList.add(SHAKE_CLASS_NAME);
+    this.element.querySelector(ClassName.CONTROLS).classList.add(SHAKE_CLASS_NAME);
 
     setTimeout(() => {
-      this.element.querySelector('.film-details__controls').classList.remove(SHAKE_CLASS_NAME);
+      this.element.querySelector(ClassName.CONTROLS).classList.remove(SHAKE_CLASS_NAME);
     }, SHAKE_ANIMATION_TIMEOUT);
   };
 
   setCommentShake = () => {
-    this.element.querySelector('.film-details__comments-list').classList.add(SHAKE_CLASS_NAME);
+    this.element.querySelector(ClassName.DELETE_COMMENT).classList.add(SHAKE_CLASS_NAME);
 
     setTimeout(() => {
-      this.element.querySelector('.film-details__comments-list').classList.remove(SHAKE_CLASS_NAME);
+      this.element.querySelector(ClassName.DELETE_COMMENT).classList.remove(SHAKE_CLASS_NAME);
     }, SHAKE_ANIMATION_TIMEOUT);
   };
 
   setFormShake = () => {
-    this.element.querySelector('.film-details__new-comment').classList.add(SHAKE_CLASS_NAME);
+    this.element.querySelector(ClassName.NEW_COMMENT).classList.add(SHAKE_CLASS_NAME);
 
     setTimeout(() => {
-      this.element.querySelector('.film-details__new-comment').classList.remove(SHAKE_CLASS_NAME);
+      this.element.querySelector(ClassName.NEW_COMMENT).classList.remove(SHAKE_CLASS_NAME);
     }, SHAKE_ANIMATION_TIMEOUT);
   };
 

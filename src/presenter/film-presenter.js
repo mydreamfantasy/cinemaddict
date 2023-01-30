@@ -36,6 +36,9 @@ export default class FilmPresenter {
   init(film) {
     this.#film = film;
 
+    // this.#film = film.film;
+    // this.#scrollTop = film.scroll;
+
     const prevFilmComponent = this.#filmComponent;
     const prevPopupComponent = this.#filmPopup;
 

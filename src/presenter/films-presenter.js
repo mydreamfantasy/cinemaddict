@@ -112,7 +112,7 @@ export default class FilmsPresenter {
 
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
-    // console.log(update)
+
     switch (actionType) {
       case UserAction.UPDATE_FILM:
 
@@ -148,6 +148,9 @@ export default class FilmsPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
+
+    // console.log(data)
+
     switch (updateType) {
       case UpdateType.PATCH:
         this.#filmPresenter.get(data.id).init(data);
