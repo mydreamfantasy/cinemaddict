@@ -113,31 +113,31 @@ export default class FilmsPresenter {
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
 
+    // console.log('filmsPre', update)
     switch (actionType) {
       case UserAction.UPDATE_FILM:
 
-        this.#filmPresenter.get(update.id).setSaving();
+        this.#filmPresenter.get(update.film.id).setSaving();
         try {
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.id).setAborting('updateFilm');
+          this.#filmPresenter.get(update.film.id).setAborting(UserAction.UPDATE_FILM);
         }
         break;
       case UserAction.ADD_COMMENT:
         this.#filmPresenter.get(update.film.id).setSaving();
         try {
-          // scrollTop;
           await this.#commentsModel.addComment(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.film.id).setAborting('addComment');
+          this.#filmPresenter.get(update.film.id).setAborting(UserAction.ADD_COMMENT);
         }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#filmPresenter.get(update.film.id).setDeleting();
+        this.#filmPresenter.get(update.film.id).setDeleting(update.id);
         try {
           await this.#commentsModel.deleteComment(updateType, update);
         } catch(err) {
-          this.#filmPresenter.get(update.film.id).setAborting('deleteComment');
+          this.#filmPresenter.get(update.film.id).setAborting(UserAction.DELETE_COMMENT, update.id);
         }
         break;
       default:
@@ -148,12 +148,9 @@ export default class FilmsPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-
-    // console.log(data)
-
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.id).init(data);
+        this.#filmPresenter.get(data.film.id).init(data.film, data?.scroll || data?.scroll.scroll);
         break;
       case UpdateType.MINOR:
         this.#clearFilms();

@@ -22,7 +22,6 @@ export default class FilmPresenter {
   #currentFilterType = null;
   #commentsModel = null;
   #mode = Mode.DEFAULT;
-  #scrollTop = 0;
 
 
   constructor({filmListContainer, onDataChange, onModeChange, currentFilterType, commentsModel}) {
@@ -33,18 +32,15 @@ export default class FilmPresenter {
     this.#commentsModel = commentsModel;
   }
 
-  init(film) {
+  init(film, scrollPosition = 0) {
     this.#film = film;
-
-    // this.#film = film.film;
-    // this.#scrollTop = film.scroll;
 
     const prevFilmComponent = this.#filmComponent;
     const prevPopupComponent = this.#filmPopup;
 
     this.#filmComponent = new CardView({
-      film: this.#film,
-      onOpenClick: () => this.#openPopupClickHandler(this.#film),
+      film: film,
+      onOpenClick: () => this.#openPopupClickHandler(film),
       onControlsClick: this.#handleControlsClick,
       currentFilterType: this.#currentFilterType,
     });
@@ -64,9 +60,10 @@ export default class FilmPresenter {
         currentFilterType: this.#currentFilterType,
         onDeleteClick: this.#handleDeleteClick,
         onAddComment: this.#handleAddComment,
-
       });
+      // console.log(scrollPosition)
       replace(this.#filmPopup, prevPopupComponent);
+      this.#filmPopup.scrollPopup(scrollPosition);
     }
 
     remove(prevFilmComponent);
@@ -92,16 +89,17 @@ export default class FilmPresenter {
     }
   }
 
-  setDeleting() {
+  setDeleting(id) {
     if (this.#mode === Mode.OPEN) {
       this.#filmPopup.updateElement({
         isDisabled: true,
         isDeleting: true,
+        deletingId: id,
       });
     }
   }
 
-  setAborting(ShakeAction) {
+  setAborting(action, id) {
     if (this.#mode === Mode.DEFAULT) {
       this.#filmComponent.shake();
       return;
@@ -112,29 +110,34 @@ export default class FilmPresenter {
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
+        deletingId: null,
       });
     };
 
-    switch(ShakeAction) {
-      case 'updateFilm':
-        this.#filmPopup.setControlButtonsShake(resetFormState);
+    switch(action) {
+      case UserAction.UPDATE_FILM:
+        this.#filmPopup.setElementAnimation(action, resetFormState);
         break;
-      case 'addComment':
-        this.#filmPopup.setFormShake(resetFormState);
+      case UserAction.ADD_COMMENT:
+        this.#filmPopup.setElementAnimation(action, resetFormState);
         break;
-      case 'deleteComment':
-        this.#filmPopup.setCommentShake(resetFormState);
+      case UserAction.DELETE_COMMENT:
+        this.#filmPopup.setElementAnimation(action, resetFormState, id);
         break;
       default:
         throw new Error(`Unknown state!, ${UpdateType}`);
     }
   }
 
-  #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH) => {
+  #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH, scrollPosition = 0) => {
+    // console.log(updatedDetails, updateType = UpdateType.PATCH, scrollPosition)
     this.#handleDataChange(
       UserAction.UPDATE_FILM,
       updateType,
-      {...this.#film, userDetails: updatedDetails},
+      {
+        film: {...this.#film, userDetails: updatedDetails},
+        scroll: scrollPosition
+      },
     );
   };
 
@@ -187,7 +190,6 @@ export default class FilmPresenter {
   };
 
   #handleAddComment = (data) => {
-    // console.log(data);
     this.#handleDataChange(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,

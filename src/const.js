@@ -40,16 +40,11 @@ const SortType = {
 };
 
 const UserAction = {
-  UPDATE_COMMENT: 'UPDATE_FILM',
+  UPDATE_FILM: 'UPDATE_FILM',
   ADD_COMMENT: 'ADD_COMMENT',
   DELETE_COMMENT: 'DELETE_COMMENT',
 };
 
-const ShakeAction = [
-  'UPDATE_COMMENT',
-  'ADD_COMMENT',
-  'DELETE_COMMENT',
-];
 
 const UpdateType = {
   PATCH: 'PATCH',
@@ -72,7 +67,7 @@ const TimeLimit = {
 
 const FILM_COUNT_PER_STEP = 5;
 const TEXT_LIMIT = 140;
-const AUTHORIZATION = 'Basic kTy9gIdsz2327rD';
+const AUTHORIZATION = 'Basic kTy9gI989dsz2327rD';
 const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict';
 
 
@@ -90,6 +85,5 @@ export {
   Method,
   AUTHORIZATION,
   END_POINT,
-  TimeLimit,
-  ShakeAction
+  TimeLimit
 };

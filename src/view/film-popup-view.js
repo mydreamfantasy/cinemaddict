@@ -7,13 +7,13 @@ const SHAKE_ANIMATION_TIMEOUT = 600;
 const SHAKE_CLASS_NAME = 'shake';
 
 const ClassName = {
-  CONTROLS: '.film-details__controls',
-  DELETE_COMMENT: '.film-details__comment',
-  NEW_COMMENT: '.film-details__new-comment',
+  'UPDATE_FILM': () => '.film-details__controls',
+  'DELETE_COMMENT': (deletingId) => `.film-details__comment[data-id-deleting="${deletingId}"]`,
+  'ADD_COMMENT': () => '.film-details__new-comment',
 };
 
-const createCommentTemplate = (comments, isDeleting, isDisabled) => comments.map((comment) => `
-  <li class="film-details__comment">
+const createCommentTemplate = (comments, isDeleting, isDisabled, deletingId) => comments.map((comment) => `
+  <li class="film-details__comment" data-id-deleting="${he.encode(comment.id)}">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${he.encode(comment.emotion)}.png" width="55" height="55" alt="emoji-smile">
     </span>
@@ -23,7 +23,7 @@ const createCommentTemplate = (comments, isDeleting, isDisabled) => comments.map
         <span class="film-details__comment-author">${he.encode(comment.author)}</span>
         <span class="film-details__comment-day">${he.encode(humanizeReleaseDate(comment.date))}</span>
         <button class="film-details__comment-delete" data-id="${he.encode(comment.id)}" ${isDisabled ? 'disabled' : ''}>
-        ${isDeleting ? 'Deleting...' : 'Delete'}
+        ${isDeleting && deletingId === comment.id ? 'Deleting...' : 'Delete'}
         </button>
       </p>
     </div>
@@ -49,7 +49,7 @@ const createNewCommentTemplate = (currentEmotion, isDisabled, isSaving) => EMOJI
   `)).join('');
 
 const createFilmPopupTemplate = (film, filmComments, state) => {
-  const {emotion, comment, isDeleting, isDisabled, isSaving} = state;
+  const {emotion, comment, isDeleting, isDisabled, isSaving, deletingId} = state;
 
   const {
     title,
@@ -78,7 +78,7 @@ const createFilmPopupTemplate = (film, filmComments, state) => {
   const activeAsWatchedClassName = alreadyWatched ? 'film-details__control-button--active' : '';
   const activeFavoriteClassName = favorite ? 'film-details__control-button--active' : '';
 
-  const commentTemplate = createCommentTemplate(filmComments, isDeleting, isDisabled);
+  const commentTemplate = createCommentTemplate(filmComments, isDeleting, isDisabled, deletingId);
   const newCommentTemplate = createNewCommentTemplate(emotion, isDisabled, isSaving);
 
   return (
@@ -220,7 +220,15 @@ export default class FilmPopupView extends AbstractStatefulView {
   #handleAddComment = null;
   #currentFilterType = null;
 
-  constructor({film, comments, onCloseClick, onControlsClick, currentFilterType, onDeleteClick, onAddComment}) {
+  constructor({
+    film,
+    comments,
+    onCloseClick,
+    onControlsClick,
+    currentFilterType,
+    onDeleteClick,
+    onAddComment,
+  }) {
     super();
     this.#film = film;
     this.#comments = comments;
@@ -231,22 +239,14 @@ export default class FilmPopupView extends AbstractStatefulView {
       scrollTop: 0,
       isDeleting: false,
       isDisabled: false,
-      isSaving: false
+      isSaving: false,
+      deletingId: null
     });
 
     this.#handleCloseClick = onCloseClick;
     this.#handleControlsClick = onControlsClick;
     this.#handleDeleteClick = onDeleteClick;
     this.#handleAddComment = onAddComment;
-
-    this.element.querySelector('.film-details__close')
-      .addEventListener('click', this.#handleCloseClick);
-
-    this.element.querySelector('.film-details__controls')
-      .addEventListener('click', this.#controlsClickHandler);
-
-    this.element.querySelectorAll('.film-details__comment-delete')
-      .forEach((el) => el.addEventListener('click', this.#commentDeleteClickHandler));
 
     this.#setInnerHandlers();
   }
@@ -260,6 +260,14 @@ export default class FilmPopupView extends AbstractStatefulView {
   get filmComments() {
     const commentsSet = new Set(this.#film.comments);
     return this.#comments.filter((comment) => commentsSet.has(comment.id));
+  }
+
+  get scrollPosition() {
+    return this.element.scrollTop;
+  }
+
+  scrollPopup(pos) {
+    this.element.scrollTop = pos;
   }
 
   #controlsClickHandler = (evt) => {
@@ -292,7 +300,7 @@ export default class FilmPopupView extends AbstractStatefulView {
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(updatedDetails, updateType, {scroll: this._state.scrollTop});
+    this.#handleControlsClick(updatedDetails, updateType, {scroll: this.scrollPosition});
   };
 
   #setInnerHandlers = () => {
@@ -320,30 +328,17 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.#setInnerHandlers();
   }
 
-  setControlButtonsShake = () => {
-    this.element.querySelector(ClassName.CONTROLS).classList.add(SHAKE_CLASS_NAME);
+
+  setElementAnimation(action, callback, id) {
+
+    const element = this.element.querySelector(ClassName[action](id));
+    element.classList.add(SHAKE_CLASS_NAME);
 
     setTimeout(() => {
-      this.element.querySelector(ClassName.CONTROLS).classList.remove(SHAKE_CLASS_NAME);
+      element.classList.remove(SHAKE_CLASS_NAME);
+      callback();
     }, SHAKE_ANIMATION_TIMEOUT);
-  };
-
-  setCommentShake = () => {
-    this.element.querySelector(ClassName.DELETE_COMMENT).classList.add(SHAKE_CLASS_NAME);
-
-    setTimeout(() => {
-      this.element.querySelector(ClassName.DELETE_COMMENT).classList.remove(SHAKE_CLASS_NAME);
-    }, SHAKE_ANIMATION_TIMEOUT);
-  };
-
-  setFormShake = () => {
-    this.element.querySelector(ClassName.NEW_COMMENT).classList.add(SHAKE_CLASS_NAME);
-
-    setTimeout(() => {
-      this.element.querySelector(ClassName.NEW_COMMENT).classList.remove(SHAKE_CLASS_NAME);
-    }, SHAKE_ANIMATION_TIMEOUT);
-  };
-
+  }
 
   #emotionChangeHandler = (evt) => {
     evt.preventDefault();
@@ -372,14 +367,14 @@ export default class FilmPopupView extends AbstractStatefulView {
         emotion,
       };
 
-      this.#handleAddComment({comment: userComment, film: this.#film, scroll: this._state.scrollTop});
+      this.#handleAddComment({comment: userComment, film: this.#film, scroll: this.scrollPosition});
       document.removeEventListener('keydown', this.#commentAddHandler);
     }
   };
 
   #commentDeleteClickHandler = (evt) =>{
     evt.preventDefault();
-    this.#handleDeleteClick({id: evt.target.dataset.id, film: this.#film, scroll: this._state.scrollTop});
+    this.#handleDeleteClick({id: evt.target.dataset.id, film: this.#film, scroll: this.scrollPosition});
   };
 
   #scrollHandler = (evt) => {
