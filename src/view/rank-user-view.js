@@ -28,6 +28,7 @@ function createRankUserTemplate(films) {
 export default class RankUserView extends AbstractView {
   #films = [];
 
+
   constructor(films) {
     super();
     this.#films = films;

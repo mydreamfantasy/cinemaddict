@@ -1,5 +1,5 @@
 import { FILM_COUNT_PER_STEP, SortType, TimeLimit, UpdateType, UserAction } from '../const.js';
-import { render, RenderPosition, remove, replace } from '../framework/render.js';
+import { render, RenderPosition, remove } from '../framework/render.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
 import FilmSectionView from '../view/film-section-view.js';
@@ -13,7 +13,7 @@ import StatisticView from '../view/statistic-view.js';
 import LoadingView from '../view/loading-view.js';
 import { sortByDate, sortByRating } from '../utils/utils.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import RankUserView from '../view/rank-user-view.js';
+import RankUserPresenter from './rank-user-presenter.js';
 
 export default class FilmsPresenter {
   #filmsContainer = null;
@@ -34,7 +34,7 @@ export default class FilmsPresenter {
   #sortComponent = null;
   #showMorePresenter = null;
   #statisticComponent = null;
-  #rankUserComponent = null;
+  #rankUserPresenter = null;
 
   #isLoading = true;
   #currentSortType = SortType.DEFAULT;
@@ -102,19 +102,6 @@ export default class FilmsPresenter {
     render(this.#sortComponent, this.#filmsContainer, RenderPosition.AFTERBEGIN);
   }
 
-  #renderRankUser = () => {
-    const prevRankUserComponent = this.#rankUserComponent;
-
-    this.#rankUserComponent = new RankUserView(this.#filmsModel.films);
-
-    if (prevRankUserComponent === null) {
-      render(this.#rankUserComponent, this.#rankUserContainer);
-      return;
-    }
-
-    replace(this.#rankUserComponent, prevRankUserComponent);
-    remove(prevRankUserComponent);
-  };
 
   #renderStatisticView() {
     this.#statisticComponent = new StatisticView({
@@ -212,6 +199,15 @@ export default class FilmsPresenter {
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
+  #renderRankUser() {
+    this.#rankUserPresenter = new RankUserPresenter ({
+      rankUserContainer: this.#rankUserContainer,
+      films: this.#filmsModel.films
+    });
+
+    this.#rankUserPresenter.init();
+  }
+
   #renderShowMoreButton() {
     this.#showMorePresenter = new ShowMorePresenter ({
       renderFilms: this.#renderFilms,
@@ -236,6 +232,10 @@ export default class FilmsPresenter {
     remove(this.#noFilmsComponent);
     remove(this.#loadingComponent);
     remove(this.#statisticComponent);
+
+    if(this.#rankUserPresenter) {
+      this.#rankUserPresenter.destroy();
+    }
 
     if(this.#showMorePresenter) {
       this.#showMorePresenter.destroy();
@@ -273,7 +273,6 @@ export default class FilmsPresenter {
     }
 
     this.#renderRankUser();
-
     this.#renderSort();
 
     this.#renderFilms(films.slice(0, Math.min(filmCount, this.#renderedFilmCount)));

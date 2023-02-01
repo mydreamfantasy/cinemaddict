@@ -33,10 +33,6 @@ const filmsPresenter = new FilmsPresenter({
   filterModel
 });
 
-
 filterPresenter.init();
 filmsPresenter.init();
 filmsModel.init();
-// .finally(() => {
-//   render(new RankUserView(), siteHeaderElement);
-// });
