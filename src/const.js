@@ -65,6 +65,24 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const UserRatings = {
+  NOVICE: {
+    rating: 'Novice',
+    min: 1,
+    max: 10,
+  },
+  FAN: {
+    rating: 'Fan',
+    min: 11,
+    max: 20,
+  },
+  MOVIE_BUFF: {
+    rating: 'Movie buff',
+    min: 21,
+    max: null,
+  }
+};
+
 const FILM_COUNT_PER_STEP = 5;
 const TEXT_LIMIT = 140;
 const AUTHORIZATION = 'Basic kTy9gI989dsz2327rD';
@@ -85,5 +103,6 @@ export {
   Method,
   AUTHORIZATION,
   END_POINT,
-  TimeLimit
+  TimeLimit,
+  UserRatings
 };

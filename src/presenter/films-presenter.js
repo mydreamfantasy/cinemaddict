@@ -1,5 +1,5 @@
 import { FILM_COUNT_PER_STEP, SortType, TimeLimit, UpdateType, UserAction } from '../const.js';
-import { render, RenderPosition, remove } from '../framework/render.js';
+import { render, RenderPosition, remove, replace } from '../framework/render.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
 import FilmSectionView from '../view/film-section-view.js';
@@ -13,10 +13,12 @@ import StatisticView from '../view/statistic-view.js';
 import LoadingView from '../view/loading-view.js';
 import { sortByDate, sortByRating } from '../utils/utils.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import RankUserView from '../view/rank-user-view.js';
 
 export default class FilmsPresenter {
   #filmsContainer = null;
   #statisticContainer = null;
+  #rankUserContainer = null;
   #filmsModel = null;
   #commentsModel = null;
   #filterModel = null;
@@ -32,6 +34,7 @@ export default class FilmsPresenter {
   #sortComponent = null;
   #showMorePresenter = null;
   #statisticComponent = null;
+  #rankUserComponent = null;
 
   #isLoading = true;
   #currentSortType = SortType.DEFAULT;
@@ -41,7 +44,8 @@ export default class FilmsPresenter {
   });
 
 
-  constructor({filmsContainer, statisticContainer, filmsModel, commentsModel, filterModel}) {
+  constructor({rankContainer, filmsContainer, statisticContainer, filmsModel, commentsModel, filterModel}) {
+    this.#rankUserContainer = rankContainer;
     this.#filmsContainer = filmsContainer;
     this.#statisticContainer = statisticContainer;
     this.#filmsModel = filmsModel;
@@ -98,6 +102,20 @@ export default class FilmsPresenter {
     render(this.#sortComponent, this.#filmsContainer, RenderPosition.AFTERBEGIN);
   }
 
+  #renderRankUser = () => {
+    const prevRankUserComponent = this.#rankUserComponent;
+
+    this.#rankUserComponent = new RankUserView(this.#filmsModel.films);
+
+    if (prevRankUserComponent === null) {
+      render(this.#rankUserComponent, this.#rankUserContainer);
+      return;
+    }
+
+    replace(this.#rankUserComponent, prevRankUserComponent);
+    remove(prevRankUserComponent);
+  };
+
   #renderStatisticView() {
     this.#statisticComponent = new StatisticView({
       filmsCount: this.#filmsModel.films.length
@@ -113,7 +131,6 @@ export default class FilmsPresenter {
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
 
-    // console.log('filmsPre', update)
     switch (actionType) {
       case UserAction.UPDATE_FILM:
 
@@ -150,7 +167,7 @@ export default class FilmsPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.film.id).init(data.film, data?.scroll || data?.scroll.scroll);
+        this.#filmPresenter.get(data.film.id).init(data.film, data?.scroll);
         break;
       case UpdateType.MINOR:
         this.#clearFilms();
@@ -254,6 +271,8 @@ export default class FilmsPresenter {
       this.#renderNoFilms();
       return;
     }
+
+    this.#renderRankUser();
 
     this.#renderSort();
 

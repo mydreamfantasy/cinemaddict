@@ -45,6 +45,8 @@ const isEscapeEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
 const isCtrlEnterEvent = (evt) => evt.key === 'Enter' && (evt.ctrlKey || evt.metaKey);
 
+const watchedFilmsFilter = (filmCards) => filmCards.filter((filmCard) => filmCard.userDetails.alreadyWatched).length;
+
 export {
   getTimeFromMins,
   isEscapeEvent,
@@ -53,4 +55,5 @@ export {
   sortByRating,
   humanizeYear,
   humanizeReleaseDate,
+  watchedFilmsFilter
 };

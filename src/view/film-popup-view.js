@@ -236,7 +236,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     this._setState ({
       emotion: null,
       comment: '',
-      scrollTop: 0,
       isDeleting: false,
       isDisabled: false,
       isSaving: false,
@@ -250,7 +249,6 @@ export default class FilmPopupView extends AbstractStatefulView {
 
     this.#setInnerHandlers();
   }
-
 
   get template() {
     const filmComments = this.filmComments;
@@ -266,8 +264,13 @@ export default class FilmPopupView extends AbstractStatefulView {
     return this.element.scrollTop;
   }
 
-  scrollPopup(pos) {
-    this.element.scrollTop = pos;
+  scrollPopup(scrollPosition) {
+    this.element.scrollTo(0, scrollPosition);
+  }
+
+  updateElement() {
+    super.updateElement();
+    this.scrollPopup(this.scrollPosition);
   }
 
   #controlsClickHandler = (evt) => {
@@ -300,11 +303,10 @@ export default class FilmPopupView extends AbstractStatefulView {
         throw new Error('Unknown state!');
     }
 
-    this.#handleControlsClick(updatedDetails, updateType, {scroll: this.scrollPosition});
+    this.#handleControlsClick(updatedDetails, updateType, this.scrollPosition);
   };
 
   #setInnerHandlers = () => {
-    this.element.addEventListener('scroll', this.#scrollHandler);
 
     this.element.querySelector('.film-details__close')
       .addEventListener('click', this.#handleCloseClick);
@@ -328,7 +330,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.#setInnerHandlers();
   }
 
-
   setElementAnimation(action, callback, id) {
 
     const element = this.element.querySelector(ClassName[action](id));
@@ -340,13 +341,13 @@ export default class FilmPopupView extends AbstractStatefulView {
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 
+
   #emotionChangeHandler = (evt) => {
     evt.preventDefault();
 
     this.updateElement({
       emotion: evt.target.value,
     });
-    this.element.scrollTop = this._state.scrollTop;
   };
 
   #commentInputHandler = (evt) => {
@@ -375,13 +376,5 @@ export default class FilmPopupView extends AbstractStatefulView {
   #commentDeleteClickHandler = (evt) =>{
     evt.preventDefault();
     this.#handleDeleteClick({id: evt.target.dataset.id, film: this.#film, scroll: this.scrollPosition});
-  };
-
-  #scrollHandler = (evt) => {
-    evt.preventDefault();
-
-    this._setState({
-      scrollTop: evt.target.scrollTop,
-    });
   };
 }
