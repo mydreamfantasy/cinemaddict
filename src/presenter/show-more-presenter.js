@@ -1,10 +1,8 @@
-
 import { FILM_COUNT_PER_STEP } from '../const.js';
 import { render, remove } from '../framework/render.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 
 export default class ShowMorePresenter {
-
   #renderFilms = null;
   #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmList = null;

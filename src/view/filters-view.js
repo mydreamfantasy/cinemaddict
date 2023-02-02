@@ -1,7 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createFilterItemTemplate(filter, currentFilterType) {
-
   const {type, name, count} = filter;
   return (
     `<a href="#${type}" class="main-navigation__item

@@ -1,5 +1,6 @@
-import { FilterType, TEXT_LIMIT, TEXT_SIZE, UpdateType } from '../const.js';
+import he from 'he';
 import AbstractView from '../framework/view/abstract-view.js';
+import { FilterType, TEXT_LIMIT, UpdateType } from '../const.js';
 import { getTimeFromMins, humanizeYear } from '../utils/utils.js';
 
 function createCardTemplate(film) {
@@ -20,24 +21,22 @@ function createCardTemplate(film) {
   } = film.userDetails;
 
   const activeWatchlistClassName = watchlist ? 'film-card__controls-item--active' : '';
-
   const activeAsWatchedClassName = alreadyWatched ? 'film-card__controls-item--active' : '';
-
   const activeFavoriteClassName = favorite ? ' film-card__controls-item--active' : '';
 
   return (
     `<article class="film-card">
       <a class="film-card__link">
-        <h3 class="film-card__title">${title}</h3>
+        <h3 class="film-card__title">${he.encode(title)}</h3>
         <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
-          <span class="film-card__year">${humanizeYear(release.date)}</span>
-          <span class="film-card__duration">${getTimeFromMins(duration)}</span>
-          <span class="film-card__genre">${genre.join(', ')}</span>
+          <span class="film-card__year">${he.encode(humanizeYear(release.date))}</span>
+          <span class="film-card__duration">${he.encode(getTimeFromMins(duration))}</span>
+          <span class="film-card__genre">${he.encode(genre.join(', '))}</span>
         </p>
-        <img src="${poster}" alt="" class="film-card__poster">
+        <img src="${he.encode(poster)}" alt="" class="film-card__poster">
         <p class="film-card__description">
-          ${description.length > TEXT_LIMIT ? `${description.slice(0, TEXT_SIZE) }...` : description }
+          ${description.length > TEXT_LIMIT ? `${he.encode(description.slice(0, TEXT_LIMIT))}...` : description}
         </p>
         <span class="film-card__comments">${film.comments.length} comments</span>
       </a>
@@ -80,23 +79,21 @@ export default class CardView extends AbstractView {
   constructor({film, onOpenClick, onControlsClick, currentFilterType}) {
     super();
     this.#film = film;
+
     this.#handleOpenClick = onOpenClick;
     this.#handleControlsClick = onControlsClick;
     this.#currentFilterType = currentFilterType;
-
 
     this.element.querySelector('.film-card__link')
       .addEventListener('click', this.#handleOpenClick);
 
     this.element.querySelector('.film-card__controls')
       .addEventListener('click', this.#controlsClickHandler);
-
   }
 
   get template() {
     return createCardTemplate(this.#film);
   }
-
 
   #controlsClickHandler = (evt) => {
     evt.preventDefault();

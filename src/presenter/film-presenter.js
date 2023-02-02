@@ -1,9 +1,8 @@
-import { UpdateType, UserAction } from '../const.js';
-import { render, replace, remove } from '../framework/render.js';
-import { isEscapeEvent } from '../utils/utils.js';
 import CardView from '../view/card-view.js';
+import { isEscapeEvent } from '../utils/utils.js';
+import { UpdateType, UserAction } from '../const.js';
 import FilmPopupView from '../view/film-popup-view.js';
-
+import { render, replace, remove } from '../framework/render.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -23,7 +22,6 @@ export default class FilmPresenter {
   #commentsModel = null;
   #mode = Mode.DEFAULT;
 
-
   constructor({filmListContainer, onDataChange, onModeChange, currentFilterType, commentsModel}) {
     this.#filmListContainer = filmListContainer;
     this.#handleDataChange = onDataChange;
@@ -32,15 +30,15 @@ export default class FilmPresenter {
     this.#commentsModel = commentsModel;
   }
 
-  init(film) {
+  init(film, scrollPosition = 0) {
     this.#film = film;
 
     const prevFilmComponent = this.#filmComponent;
     const prevPopupComponent = this.#filmPopup;
 
     this.#filmComponent = new CardView({
-      film: this.#film,
-      onOpenClick: () => this.#openPopupClickHandler(this.#film),
+      film: film,
+      onOpenClick: () => this.#openPopupClickHandler(film),
       onControlsClick: this.#handleControlsClick,
       currentFilterType: this.#currentFilterType,
     });
@@ -60,10 +58,10 @@ export default class FilmPresenter {
         currentFilterType: this.#currentFilterType,
         onDeleteClick: this.#handleDeleteClick,
         onAddComment: this.#handleAddComment,
-
       });
+      // console.log(scrollPosition)
       replace(this.#filmPopup, prevPopupComponent);
-      // this.#mode = Mode.DEFAULT;
+      this.#filmPopup.scrollPopup(scrollPosition);
     }
 
     remove(prevFilmComponent);
@@ -85,25 +83,60 @@ export default class FilmPresenter {
     if (this.#mode === Mode.OPEN) {
       this.#filmPopup.updateElement({
         isDisabled: true,
-        // isSaving: true,
+        isSaving: true,
       });
     }
   }
 
-  setDeleting() {
+  setDeleting(id) {
     if (this.#mode === Mode.OPEN) {
       this.#filmPopup.updateElement({
         isDisabled: true,
         isDeleting: true,
+        deletingId: id,
       });
     }
   }
 
-  #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH) => {
+  setAborting(action, id) {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#filmComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#filmPopup.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+        deletingId: null,
+      });
+    };
+
+    switch(action) {
+      case UserAction.UPDATE_FILM:
+        this.#filmPopup.setElementAnimation(action, resetFormState);
+        break;
+      case UserAction.ADD_COMMENT:
+        this.#filmPopup.setElementAnimation(action, resetFormState);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this.#filmPopup.setElementAnimation(action, resetFormState, id);
+        break;
+      default:
+        throw new Error(`Unknown state!, ${UpdateType}`);
+    }
+  }
+
+  #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH, scrollPosition = 0) => {
     this.#handleDataChange(
       UserAction.UPDATE_FILM,
       updateType,
-      {...this.#film, userDetails: updatedDetails});
+      {
+        film: {...this.#film, userDetails: updatedDetails},
+        scroll: scrollPosition
+      },
+    );
   };
 
   async #openPopupClickHandler(film) {
@@ -150,7 +183,7 @@ export default class FilmPresenter {
     this.#handleDataChange(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
-      id
+      id,
     );
   };
 
@@ -158,7 +191,7 @@ export default class FilmPresenter {
     this.#handleDataChange(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
-      data
+      data,
     );
   };
 }

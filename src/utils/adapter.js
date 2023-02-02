@@ -1,4 +1,4 @@
-export const AdaptFilm = (film) => {
+export const adaptFilm = (film) => {
   const {
     id,
     comments,

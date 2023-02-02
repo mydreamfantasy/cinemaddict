@@ -1,13 +1,12 @@
-import CommentsModel from './model/comments-model.js';
+
 import FilmsModel from './model/films-model.js';
-import FilmsPresenter from './presenter/films-presenter.js';
-import { render } from './framework/render.js';
-import RankUserView from './view/rank-user-view.js';
 import FilterModel from './model/filter-model.js';
-import FilterPresenter from './presenter/filter-presenter.js';
 import FilmsApiService from './films-api-service.js';
-import CommentsApiService from './comments-api-service.js';
 import { AUTHORIZATION, END_POINT } from './const.js';
+import CommentsModel from './model/comments-model.js';
+import CommentsApiService from './comments-api-service.js';
+import FilmsPresenter from './presenter/films-presenter.js';
+import FilterPresenter from './presenter/filter-presenter.js';
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
@@ -27,6 +26,7 @@ const filterPresenter = new FilterPresenter({
 });
 
 const filmsPresenter = new FilmsPresenter({
+  rankContainer: siteHeaderElement,
   filmsContainer: siteMainElement,
   statisticContainer: siteFooterElement,
   filmsModel,
@@ -34,10 +34,6 @@ const filmsPresenter = new FilmsPresenter({
   filterModel
 });
 
-
-filterPresenter.init();
+filmsModel.init();
 filmsPresenter.init();
-filmsModel.init()
-  .finally(() => {
-    render(new RankUserView(), siteHeaderElement);
-  });
+filterPresenter.init();
