@@ -1,5 +1,6 @@
-import Observable from '../framework/observable.js';
 import { adaptFilm } from '../utils/adapter.js';
+import Observable from '../framework/observable.js';
+
 
 export default class CommentsModel extends Observable{
   #commentsApiService = null;
@@ -9,7 +10,6 @@ export default class CommentsModel extends Observable{
     super();
     this.#commentsApiService = commentsApiService;
   }
-
 
   get comments() {
     return this.#comments;

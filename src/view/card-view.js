@@ -1,10 +1,9 @@
-import { FilterType, TEXT_LIMIT, UpdateType } from '../const.js';
-import AbstractView from '../framework/view/abstract-view.js';
 import he from 'he';
+import AbstractView from '../framework/view/abstract-view.js';
+import { FilterType, TEXT_LIMIT, UpdateType } from '../const.js';
 import { getTimeFromMins, humanizeYear } from '../utils/utils.js';
 
 function createCardTemplate(film) {
-
   const {
     title,
     totalRating,
@@ -22,9 +21,7 @@ function createCardTemplate(film) {
   } = film.userDetails;
 
   const activeWatchlistClassName = watchlist ? 'film-card__controls-item--active' : '';
-
   const activeAsWatchedClassName = alreadyWatched ? 'film-card__controls-item--active' : '';
-
   const activeFavoriteClassName = favorite ? ' film-card__controls-item--active' : '';
 
   return (
@@ -87,19 +84,16 @@ export default class CardView extends AbstractView {
     this.#handleControlsClick = onControlsClick;
     this.#currentFilterType = currentFilterType;
 
-
     this.element.querySelector('.film-card__link')
       .addEventListener('click', this.#handleOpenClick);
 
     this.element.querySelector('.film-card__controls')
       .addEventListener('click', this.#controlsClickHandler);
-
   }
 
   get template() {
     return createCardTemplate(this.#film);
   }
-
 
   #controlsClickHandler = (evt) => {
     evt.preventDefault();

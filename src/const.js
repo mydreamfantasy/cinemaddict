@@ -5,20 +5,6 @@ const EMOJI = [
   'angry'
 ];
 
-const NoFilms = {
-  ALL_FILMS: 'There are no movies in our database',
-  WATCHLIST: 'There are no movies to watch now',
-  HISTORY: 'There are no watched movies now',
-  FAVORITE:'There are no favorite movies now',
-};
-
-const TitlesSection = {
-  LOADING: 'Loading...',
-  ALL_MOVIES: 'All movies. Upcoming',
-  TOP_RATED: 'Top rated',
-  MOST_COMMENTED: 'Most commented'
-};
-
 const FilterType = {
   ALL: 'all',
   WATCHLIST: 'watchlist',
@@ -45,12 +31,12 @@ const UserAction = {
   DELETE_COMMENT: 'DELETE_COMMENT',
 };
 
-
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
+  INIT_ERROR: 'INIT_ERROR'
 };
 
 const Method = {
@@ -68,41 +54,40 @@ const TimeLimit = {
 const UserRatings = {
   NOVICE: {
     rating: 'Novice',
-    min: 1,
     max: 10,
   },
   FAN: {
     rating: 'Fan',
-    min: 11,
     max: 20,
   },
   MOVIE_BUFF: {
     rating: 'Movie buff',
-    min: 21,
-    max: null,
+    max: Infinity,
   }
 };
 
 const FILM_COUNT_PER_STEP = 5;
 const TEXT_LIMIT = 140;
-const AUTHORIZATION = 'Basic kTy9gI989dsz2327rD';
+const AUTHORIZATION = 'Basic kTy9gI98jhz2327rD';
 const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict';
+const SHAKE_ANIMATION_TIMEOUT = 600;
+const SHAKE_CLASS_NAME = 'shake';
 
 
 export {
   EMOJI,
-  NoFilms,
-  FilterDictionary,
+  END_POINT,
+  TEXT_LIMIT,
+  AUTHORIZATION,
   FILM_COUNT_PER_STEP,
-  FilterType,
+  SHAKE_ANIMATION_TIMEOUT,
+  SHAKE_CLASS_NAME,
+  Method,
   SortType,
-  TitlesSection,
+  TimeLimit,
   UserAction,
   UpdateType,
-  TEXT_LIMIT,
-  Method,
-  AUTHORIZATION,
-  END_POINT,
-  TimeLimit,
-  UserRatings
+  FilterType,
+  UserRatings,
+  FilterDictionary,
 };

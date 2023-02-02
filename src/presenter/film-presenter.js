@@ -1,9 +1,8 @@
-import { UpdateType, UserAction } from '../const.js';
-import { render, replace, remove } from '../framework/render.js';
-import { isEscapeEvent } from '../utils/utils.js';
 import CardView from '../view/card-view.js';
+import { isEscapeEvent } from '../utils/utils.js';
+import { UpdateType, UserAction } from '../const.js';
 import FilmPopupView from '../view/film-popup-view.js';
-
+import { render, replace, remove } from '../framework/render.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -22,7 +21,6 @@ export default class FilmPresenter {
   #currentFilterType = null;
   #commentsModel = null;
   #mode = Mode.DEFAULT;
-
 
   constructor({filmListContainer, onDataChange, onModeChange, currentFilterType, commentsModel}) {
     this.#filmListContainer = filmListContainer;
@@ -85,6 +83,7 @@ export default class FilmPresenter {
     if (this.#mode === Mode.OPEN) {
       this.#filmPopup.updateElement({
         isDisabled: true,
+        isSaving: true,
       });
     }
   }
@@ -130,7 +129,6 @@ export default class FilmPresenter {
   }
 
   #handleControlsClick = (updatedDetails, updateType = UpdateType.PATCH, scrollPosition = 0) => {
-    // console.log(updatedDetails, updateType = UpdateType.PATCH, scrollPosition)
     this.#handleDataChange(
       UserAction.UPDATE_FILM,
       updateType,

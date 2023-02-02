@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import { FilterType, UserRatings } from '../const.js';
+import { filter } from './filter.js';
 
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
@@ -45,15 +47,28 @@ const isEscapeEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
 const isCtrlEnterEvent = (evt) => evt.key === 'Enter' && (evt.ctrlKey || evt.metaKey);
 
-const watchedFilmsFilter = (filmCards) => filmCards.filter((filmCard) => filmCard.userDetails.alreadyWatched).length;
+const getUserRating = (films) => {
+
+  const watchedFilmsCount = filter[FilterType.HISTORY](films).length;
+
+  if (watchedFilmsCount <= UserRatings.NOVICE.max) {
+    return UserRatings.NOVICE.rating;
+  }
+
+  if (watchedFilmsCount <= UserRatings.FAN.max) {
+    return UserRatings.FAN.rating;
+  }
+
+  return UserRatings.MOVIE_BUFF.rating;
+};
 
 export {
-  getTimeFromMins,
-  isEscapeEvent,
-  isCtrlEnterEvent,
   sortByDate,
   sortByRating,
   humanizeYear,
+  getUserRating,
+  isEscapeEvent,
+  getTimeFromMins,
+  isCtrlEnterEvent,
   humanizeReleaseDate,
-  watchedFilmsFilter
 };

@@ -1,10 +1,7 @@
-import { EMOJI, UpdateType, FilterType } from '../const.js';
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getTimeFromMins, humanizeReleaseDate, isCtrlEnterEvent } from '../utils/utils.js';
-
-const SHAKE_ANIMATION_TIMEOUT = 600;
-const SHAKE_CLASS_NAME = 'shake';
+import { EMOJI, UpdateType, FilterType, SHAKE_ANIMATION_TIMEOUT, SHAKE_CLASS_NAME, } from '../const.js';
 
 const ClassName = {
   'UPDATE_FILM': () => '.film-details__controls',
@@ -247,7 +244,7 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.#handleDeleteClick = onDeleteClick;
     this.#handleAddComment = onAddComment;
 
-    this.#setInnerHandlers();
+    this._restoreHandlers();
   }
 
   get template() {
@@ -268,9 +265,10 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.element.scrollTo(0, scrollPosition);
   }
 
-  updateElement() {
-    super.updateElement();
-    this.scrollPopup(this.scrollPosition);
+  updateElement(update) {
+    const scrollPosition = this.scrollPosition;
+    super.updateElement(update);
+    this.scrollPopup(scrollPosition);
   }
 
   #controlsClickHandler = (evt) => {
@@ -340,7 +338,6 @@ export default class FilmPopupView extends AbstractStatefulView {
       callback();
     }, SHAKE_ANIMATION_TIMEOUT);
   }
-
 
   #emotionChangeHandler = (evt) => {
     evt.preventDefault();

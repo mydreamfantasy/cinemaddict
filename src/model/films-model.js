@@ -1,6 +1,6 @@
 import { UpdateType } from '../const.js';
-import Observable from '../framework/observable.js';
 import { adaptFilm } from '../utils/adapter.js';
+import Observable from '../framework/observable.js';
 
 export default class FilmsModel extends Observable {
   #filmsApiService = null;
@@ -20,7 +20,8 @@ export default class FilmsModel extends Observable {
       const films = await this.#filmsApiService.films;
       this.#films = films.map(this.#adaptToClient);
     } catch(err) {
-      this.#films = [];
+      this._notify(UpdateType.INIT_ERROR);
+      throw err;
     }
     this._notify(UpdateType.INIT);
   }
@@ -48,8 +49,6 @@ export default class FilmsModel extends Observable {
         ...this.#films.slice(index + 1),
       ];
 
-
-      // console.log('model', updateFilm)
       this._notify(updateType, update);
     } catch(err) {
       throw new Error('Can\'t update film');

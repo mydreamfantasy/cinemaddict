@@ -1,22 +1,24 @@
-import {render, replace, remove} from '../framework/render.js';
-
+import { getUserRating } from '../utils/utils.js';
 import RankUserView from '../view/rank-user-view.js';
+import {render, replace, remove} from '../framework/render.js';
 
 export default class RankUserPresenter {
   #rankUserContainer = null;
   #filmsModel = null;
-
   #rankUserComponent = null;
 
-  constructor({rankUserContainer, films}) {
+  constructor({rankUserContainer, filmsModel}) {
     this.#rankUserContainer = rankUserContainer;
-    this.#filmsModel = films;
+    this.#filmsModel = filmsModel;
+
+    this.#filmsModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
     const prevRankUserComponent = this.#rankUserComponent;
+    const userRank = getUserRating(this.#filmsModel.films);
 
-    this.#rankUserComponent = new RankUserView(this.#filmsModel);
+    this.#rankUserComponent = new RankUserView({rank: userRank});
 
     if (prevRankUserComponent === null) {
       render(this.#rankUserComponent, this.#rankUserContainer);
@@ -31,4 +33,8 @@ export default class RankUserPresenter {
   destroy() {
     remove(this.#rankUserComponent);
   }
+
+  #handleModelEvent = () => {
+    this.init();
+  };
 }

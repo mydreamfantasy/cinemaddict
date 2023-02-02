@@ -1,11 +1,12 @@
-import CommentsModel from './model/comments-model.js';
+
 import FilmsModel from './model/films-model.js';
-import FilmsPresenter from './presenter/films-presenter.js';
 import FilterModel from './model/filter-model.js';
-import FilterPresenter from './presenter/filter-presenter.js';
 import FilmsApiService from './films-api-service.js';
-import CommentsApiService from './comments-api-service.js';
 import { AUTHORIZATION, END_POINT } from './const.js';
+import CommentsModel from './model/comments-model.js';
+import CommentsApiService from './comments-api-service.js';
+import FilmsPresenter from './presenter/films-presenter.js';
+import FilterPresenter from './presenter/filter-presenter.js';
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
@@ -33,6 +34,6 @@ const filmsPresenter = new FilmsPresenter({
   filterModel
 });
 
-filterPresenter.init();
-filmsPresenter.init();
 filmsModel.init();
+filmsPresenter.init();
+filterPresenter.init();
