@@ -1,5 +1,5 @@
 import CardView from '../view/card-view.js';
-import { isEscapeEvent } from '../utils/utils.js';
+import { isEscapeEvent, isCtrlEnterEvent  } from '../utils/utils.js';
 import { UpdateType, UserAction } from '../const.js';
 import FilmPopupView from '../view/film-popup-view.js';
 import { render, replace, remove } from '../framework/render.js';
@@ -18,6 +18,8 @@ export default class FilmPresenter {
   #film = null;
   #handleDataChange = null;
   #handleModeChange = null;
+  #handleAddComment = null;
+  #commentAddHandler = null;
   #currentFilterType = null;
   #commentsModel = null;
   #mode = Mode.DEFAULT;
@@ -149,16 +151,18 @@ export default class FilmPresenter {
       onControlsClick: this.#handleControlsClick,
       currentFilterType: this.#currentFilterType,
       onDeleteClick: this.#handleDeleteClick,
-      onAddComment: this.#handleAddComment
+      onAddComment: this.#handleAddComment,
     });
     this.#appendPopup();
   }
+
 
   #appendPopup() {
     this.#handleModeChange();
     document.body.appendChild(this.#filmPopup.element);
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    document.addEventListener('keydown', this.#commentAddHandler)
     this.#mode = Mode.OPEN;
   }
 
@@ -166,11 +170,19 @@ export default class FilmPresenter {
     document.body.removeChild(this.#filmPopup.element);
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    document.removeEventListener('keydown', this.#commentAddHandler)
     this.#mode = Mode.DEFAULT;
   }
 
   #closePopupClickHandler = () => {
     this.#removePopup();
+  };
+
+  #commentAddHandler = (evt) => {
+    if (isCtrlEnterEvent(evt)) {
+      evt.preventDefault();
+      this.#handleAddComment({comment: this.#filmPopup.getFormData(), film: this.#film, scroll: this.scrollPosition})
+    }
   };
 
   #escKeyDownHandler = (evt) => {
@@ -189,6 +201,7 @@ export default class FilmPresenter {
   };
 
   #handleAddComment = (data) => {
+
     this.#handleDataChange(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
