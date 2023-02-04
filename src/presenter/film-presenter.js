@@ -38,6 +38,7 @@ export default class FilmPresenter {
 
     this.#filmComponent = new CardView({
       film: film,
+      comments: this.#commentsModel,
       onOpenClick: () => this.#openPopupClickHandler(film),
       onControlsClick: this.#handleControlsClick,
       currentFilterType: this.#currentFilterType,
@@ -59,7 +60,7 @@ export default class FilmPresenter {
         onDeleteClick: this.#handleDeleteClick,
         onAddComment: this.#handleAddComment,
       });
-      // console.log(scrollPosition)
+
       replace(this.#filmPopup, prevPopupComponent);
       this.#filmPopup.scrollPopup(scrollPosition);
     }
