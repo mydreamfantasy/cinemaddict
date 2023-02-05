@@ -214,7 +214,6 @@ export default class FilmPopupView extends AbstractStatefulView {
   #handleCloseClick = null;
   #handleControlsClick = null;
   #handleDeleteClick = null;
-  #handleAddComment = null;
   #currentFilterType = null;
 
   constructor({
@@ -224,7 +223,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     onControlsClick,
     currentFilterType,
     onDeleteClick,
-    onAddComment,
   }) {
     super();
     this.#film = film;
@@ -242,7 +240,6 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.#handleCloseClick = onCloseClick;
     this.#handleControlsClick = onControlsClick;
     this.#handleDeleteClick = onDeleteClick;
-    this.#handleAddComment = onAddComment;
 
     this._restoreHandlers();
   }
@@ -272,16 +269,10 @@ export default class FilmPopupView extends AbstractStatefulView {
   }
 
   getFormData() {
-    const comment = this._state.comment;
-    const emotion = this._state.emotion;
-
-    const userComment = {
-      comment,
-      emotion,
+    return {
+      comment: this._state.comment,
+      emotion: this._state.emotion,
     };
-
-    return userComment;
-    // this.#handleAddComment (userComment);
   }
 
   #controlsClickHandler = (evt) => {
